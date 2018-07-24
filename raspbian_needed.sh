@@ -63,19 +63,7 @@ usr:pi,raspberry
     ./configure
     make && sudo make install
     sudo nano /etc/systemd/system/transmission.service
-    {
-        [Unit]
-        Description=Transmission BitTorrent Daemon
-        After=network.target
-
-        [Service]
-        User=root
-        LimitNOFILE=100000
-        ExecStart=/usr/local/bin/transmission-daemon -f --log-error -g /usr/local/share/transmission
-
-        [Install]
-        WantedBy=multi-user.target
-    }
+    # ./transmission/transmission.service
     sudo systemctl daemon-reload
     sudo systemctl start transmission.service
     sudo systemctl stop transmission.service
@@ -88,35 +76,9 @@ usr:pi,raspberry
     tar -zxvf frp_0.20.0_linux_arm.tar.gz
     cd frp_0.20.0_linux_arm
     rm frpc && rm frpc.ini
-    nano ./frps.ini
-    {
-        [common]
-        bind_port = 5101
-        bind_udp_port = 5101
-        dashboard_addr = 0.0.0.0
-        dashboard_port = 7101
-
-        # dashboard user and passwd for basic auth protect, if not set, both default va$
-        dashboard_user = Wangjihe
-        dashboard_pwd = ******  # password
-        log_level = error
-        log_file = ./frps.log
-        log_max_days = 2
-        token = ****** # user_password (please use low-level password && only numbers support)
-    }
+    nano ./frps.ini # ./frp/frps.ini
     sudo nano /etc/systemd/system/frps.service
-    {
-        [Unit]
-        Description=frps daemon
-
-        [Service]
-        Type=simple
-        ExecStart=/home/pi/frp_0.20.0_linux_arm/frps -c /home/pi/frp_0.20.0_linux_arm/frps.ini
-        ExecStop=/usr/bin/killall frps
-
-        [Install]
-        WantedBy=multi-user.target
-    }
+    # ./frp/frps.service
     sudo systemctl enable frps
     # sudo systemctl start frps
     # sudo systemctl stop frps
