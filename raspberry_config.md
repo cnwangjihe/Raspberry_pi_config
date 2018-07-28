@@ -1,20 +1,35 @@
-usr:pi,raspberry
+Some preparation before using Raspberry PI
+==========================================
 
-# step 1 change the password
-    passwd 
+Some experience after testing for a long time.
 
-# step 2 configure the ssh
+
+Necessary Steps
+---------------
+
+### step 1 change the password ###
+```Bash
+    passwd # user:pi,oldpsw:raspberry
+```
+
+### step 2 configure the ssh ###
+```Bash
     sudo nano /etc/ssh/ssh_config #set "GSSAPIAuthentication no"
     sudo nano /etc/ssh/sshd_config #set "UseDNS no"
     # then reboot
-# step 3 set static IP
+```
+
+### step 3 set static IP ###
+```Bash
     # sudo nano /etc/dhcpcd.conf
     sudo echo 'interface eth0'>>/etc/dhcpcd.conf
     sudo echo 'inform 192.168.1.101'>>/etc/dhcpcd.conf
     sudo echo 'static routers=192.168.1.118'>>/etc/dhcpcd.conf
     sudo echo 'static domain_name_servers=114.114.114.114 8.8.8.8'>>/etc/dhcpcd.conf
+```
 
-# step 4 edit hosts && change the source
+### step 4 edit hosts && change the source ###
+```Bash
     # sudo nano /etc/hosts
     sudo -- sh -c -e "sudo echo '151.101.72.249 http://global-ssl.fastly.Net'>>/etc/hosts"
     sudo -- sh -c -e "sudo echo '192.30.253.112 http://github.com'>>/etc/hosts"
@@ -23,11 +38,15 @@ usr:pi,raspberry
     sudo -- sh -c -e "sudo echo 'deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib'>>/etc/apt/sources.list"
     sudo -- sh -c -e "sudo rm /etc/apt/sources.list.d/raspi.list"
     sudo apt-get update && sudo apt-get upgrade 
+```
 
-# step 5 install necessary packages
+### step 5 install necessary packages ###
+```Bash
     sudo apt-get install vim gdbserver g++ systemd git 
+```
 
-# step 6 install ntfs support
+### step 6 install ntfs support ###
+```Bash
     sudo su
     cd /usr/local/src
     rm ntfs-3g_ntfsprogs-2017.3.23.tgz
@@ -39,8 +58,14 @@ usr:pi,raspberry
 
     # sudo fdisk -l
     # sudo mount -t ntfs-3g /dev/sdb1 /mnt/usb
+```
 
-# part 1 install openssl with sources code
+
+Helpful Parts
+-------------
+
+### part 1 install openssl with sources code ###
+```Bash
     # sudo apt-get remove openssl
     wget https://ftp.openssl.org/source/old/1.0.0/openssl-1.0.0.tar.gz
     tar -zxvf openssl-1.0.0.tar.gz
@@ -52,55 +77,78 @@ usr:pi,raspberry
     make clean
     make && make install_sw # (update)
     exit
+```
 
-# part 2 install transmission with apt
+### part 2 install transmission with apt ###
+```Bash
     sudo apt-get install transmission
+```
 
-# part 3 install transmission with sources code
+### part 3 install transmission with sources code ###
+
+Don't use this kind of ways!!!!  
+It is difficult to succeed.  
+
+```Bash
     sudo apt-get install wget libcurl4-openssl-dev libevent-dev ca-certificates libssl-dev pkg-config build-essential intltool
     git clone https://github.com/superlukia/transmission-2.92_skiphashcheck.git
     cd transmission-2.92_skiphashcheck/
     ./configure
     make && sudo make install
-    sudo nano /etc/systemd/system/transmission.service
-    # ./transmission/transmission.service
-    sudo systemctl daemon-reload
-    sudo systemctl start transmission.service
-    sudo systemctl stop transmission.service
-
     # sudo nano /usr/local/share/transmission/settings.json
-#part
+    # then install service
+```
 
-# part 4 install frp-server on linux
+### part 4 install frp-server on linux ###
+
+```Bash
     wget https://github.com/fatedier/frp/releases/download/v0.20.0/frp_0.20.0_linux_arm.tar.gz
     tar -zxvf frp_0.20.0_linux_arm.tar.gz
     cd frp_0.20.0_linux_arm
     rm frpc && rm frpc.ini
     nano ./frps.ini # ./frp/frps.ini
-    if "systemctl?"
-    {
-        sudo nano /etc/systemd/system/frps.service
-        # ./frp/frps.service
-        sudo systemctl enable frps
-        # sudo systemctl start frps
-        # sudo systemctl stop frps
-    }
-    else
-    {
-        sudo nano /etc/init.d/frps
-        # ./frp/frps.sh
-        sudo chmod 775 /etc/init.d/frps
-        sudo /etc/init.d/frps enable
-        #sudo /etc/init.d/frps start
-    }
+    # then install service
+```
 
-# part 5 git with ssh
+### part 5 git with ssh ###
+```Bash
     ssh-keygen -t rsa -C "1321942045@qq.com"
-    # 要求输入位置和 passphrase的时候，按enter即可。默认生成的文件在%HOME%/.ssh中，包括id_rsa 和 id_rsa.pub。
-    # 在github的profile中，新增ssh key，title任意可空，把id_rsa.pub中的东西复制到内容中就好。
+    # ignore location ans passphrase.
+    # Usually, the key will be stored in %HOME%/.ssh, include id_rsa ans id_rsa.pub.
+    # Copy the text in id_rsa.pub to profile(github or gitlab), to add new ssh key.
+```
 
-cat /sys/class/thermal/thermal_zone0/temp # 查看CPU温度
-tar -zxvf *.tar.gz # 解压
-git -C /home/wangjihe/raspIP/ #指定git目录
-top -u pi # 查看用户各个进程的资源占用状况
 
+Create Services.
+------
+
+### init.d ###
+
+Use init.d to manage service.  
+You need to change the value of `dir`,`cmd`and`user`.  
+To see the template please click [here](./template_for_initd)  
+```Bash
+    sudo cp template_for_initd /etc/init.d/YOUR_SERVICE
+    sudo chmod 775 /etc/init.d/YOUR_SERVICE
+    sudo /etc/init.d/YOUR_SERVICE start # (stop|status|restart)
+```
+### systemd ###
+
+Use systemd to manage service.
+You need to change the value of `Description`,`User`,`Group`(*the same as User*),`ExecStart`and`ExecStop`
+To see the template please click [here](./template_for_systemd)  
+```Bash
+    sudo cp template_for_systemd /etc/systemd/system/YOUR_SERVICE.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable YOUR_SERVICE # start automatic
+    sudo systemctl start YOUR_SERVICE # (stop|restart|disable)
+```
+
+Others
+------
+```Bash
+    cat /sys/class/thermal/thermal_zone0/temp # check the temperature of CPU
+    tar -zxvf *.tar.gz # unzip
+    git -C /home/wangjihe/raspIP/ # set the location of git repositories
+    top -u pi # like taskmgr
+```
