@@ -1,0 +1,10 @@
+[Unit]
+Description=RefreshpublicIP daemon
+
+[Service]
+Type=simple
+ExecStart=/home/tmp/RefreshpublicIP
+ExecStop=/usr/bin/killall RefreshpublicIP
+
+[Install]
+WantedBy=multi-user.target

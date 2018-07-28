@@ -18,4 +18,6 @@ frp port name rules
 203:server 2003 (10.3.32.3)
 202:Main srv 0 (10.3.32.2)
 421:wgs_teacher
-900-999:temp
+422:wgs_253.253
+423:wgs_25
+500-599:temp

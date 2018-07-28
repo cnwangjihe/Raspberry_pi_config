@@ -77,11 +77,30 @@ usr:pi,raspberry
     cd frp_0.20.0_linux_arm
     rm frpc && rm frpc.ini
     nano ./frps.ini # ./frp/frps.ini
-    sudo nano /etc/systemd/system/frps.service
-    # ./frp/frps.service
-    sudo systemctl enable frps
-    # sudo systemctl start frps
-    # sudo systemctl stop frps
+    if "systemctl?"
+    {
+        sudo nano /etc/systemd/system/frps.service
+        # ./frp/frps.service
+        sudo systemctl enable frps
+        # sudo systemctl start frps
+        # sudo systemctl stop frps
+    }
+    else
+    {
+        sudo nano /etc/init.d/frps
+        # ./frp/frps.sh
+        sudo chmod 775 /etc/init.d/frps
+        sudo /etc/init.d/frps enable
+        #sudo /etc/init.d/frps start
+    }
 
-cat /sys/class/thermal/thermal_zone0/temp CPU温度
-tar -zxvf *.tar.gz
+# part 5 git with ssh
+    ssh-keygen -t rsa -C "1321942045@qq.com"
+    # 要求输入位置和 passphrase的时候，按enter即可。默认生成的文件在%HOME%/.ssh中，包括id_rsa 和 id_rsa.pub。
+    # 在github的profile中，新增ssh key，title任意可空，把id_rsa.pub中的东西复制到内容中就好。
+
+cat /sys/class/thermal/thermal_zone0/temp # 查看CPU温度
+tar -zxvf *.tar.gz # 解压
+git -C /home/wangjihe/raspIP/ #指定git目录
+top -u pi # 查看用户各个进程的资源占用状况
+

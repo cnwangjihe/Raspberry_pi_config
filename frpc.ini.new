@@ -1,0 +1,8 @@
+Get-Content : 找不到路径“C:\Users\13219\Documents\GitHub\Raspberry_pi_config\frpc.ini.template”，因为该路径不存在。
+所在位置 行:1 字符: 1
++ Get-Content 'frpc.ini.template' | %{Write-Host $_.Replace('[IP]','14. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\13219\...pc.ini.template:String) [Get-Content], ItemNotFoundEx 
+   ception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand
+ 

@@ -1,0 +1,10 @@
+[Unit]
+Description=GetPublicIP daemon
+
+[Service]
+Type=simple
+ExecStart=/home/pi/GetpublicIP
+ExecStop=/usr/bin/killall GetpublicIP
+
+[Install]
+WantedBy=multi-user.target

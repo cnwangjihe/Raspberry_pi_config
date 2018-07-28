@@ -1,19 +1,19 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          frpc
+# Provides:          frps
 # Required-Start:    $local_fs $network
 # Required-Stop:     $local_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: frpc service deamon
-# Description:       frpc service daemon
+# Short-Description: frps service deamon
+# Description:       frps service daemon
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/frpc
-DAEMON_OPTS=-c\ /home/tmp/frpc.ini
-NAME=frpc
+DAEMON=/usr/bin/frps
+DAEMON_OPTS=-c\ /home/tmp/frps.ini
+NAME=frps
 USER=tmp
 
 set -e
