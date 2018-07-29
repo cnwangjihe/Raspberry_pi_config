@@ -143,6 +143,12 @@ To see the template please click [here](./template_for_systemd)
     sudo systemctl enable YOUR_SERVICE # start automatic
     sudo systemctl start YOUR_SERVICE # (stop|restart|disable)
 ```
+### WinSW ###
+
+Use WinSW to install service on Windows.  
+[Here](https://github.com/kohsuke/winsw) has detailed information.  
+An [example](./WinSW.xml) for frpc.  
+*Notice: if you see the error"WMI Operation failure: AccessDenied",Please check if you have used cipher to encrypt your files.*
 
 Others
 ------

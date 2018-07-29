@@ -1,0 +1,8 @@
+<service>
+    <id>frpc</id>
+    <name>frpc</name>
+    <description>Port forwarding service</description>
+    <executable>frpc</executable>
+    <arguments>-c frpc.ini</arguments>
+    <logmode>reset</logmode>
+</service>
