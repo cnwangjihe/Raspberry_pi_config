@@ -61,22 +61,16 @@ int main()
 	//	cerr << "pass \n";
 		#ifdef linux
 			system("rm IP.txt");
-			command = "wget "+ url;
 		#endif
 		#ifdef WIN32
-			command = "powershell wget " + url + " -out IP.txt";
+			system("del /f /q IP.txt");
 		#endif
+		command = "wget "+ url;
 		system(command.c_str());
 		ifstream fin("IP.txt");
 		fin >> IP;
-		#ifdef linux
-			command = "sed \'s/\\[IP\\]/ "+ IP + "/g\' frpc.ini.template > frpc.ini.new";
-			system(command.c_str());
-		#endif
-		#ifdef WIN32
-			command = "powershell  \"Get-Content \'frpc.ini.template\' | %{Write-Host $_.Replace(\'[IP]\',\'" + IP + "\')}\" > frpc.ini.new";
-			system(command.c_str());
-		#endif
+		command = "sed \"s/\\[IP\\]/ "+ IP + "/g\" frpc.ini.template > frpc.ini.new";
+		system(command.c_str());
 		fa = fopen("frpc.ini","rt");
 		fb = fopen("frpc.ini.new","rt");
 		if (!CompareFile(fa,fb))
