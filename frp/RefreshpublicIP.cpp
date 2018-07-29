@@ -4,10 +4,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <string>
-#ifdef WIN32
+#if (defined WIN32)
 	#include <windows.h>
-#endif
-#ifdef linux
+#else
 	#include <unistd.h>
 #endif
 
@@ -27,62 +26,64 @@ bool CompareFile(FILE *fa,FILE *fb)
 	{
 		fgets(sa,MAXLEN,fa);
 		fgets(sb,MAXLEN,fb);
-//		printf("%s\n\n%s\n\n",sa,sb);
 		if(strcmp(sa,sb))
 			return 0;
 	}
-//	cerr << "sds";
 	return !(feof(fa)^feof(fb));
-}
-
-void test()
-{
-	fa = fopen("frpc.ini","rt");
-	fb = fopen("frpc.ini.new","rt");
-	cerr << CompareFile(fa,fb);
-	exit(0);
 }
 
 int main()
 {
-	#ifdef linux
-		cerr << "GetLinux\n";
+	#if (defined linux)
+		cout << "GetLinux\n";
 		system("ps -eaf | grep [s]ystemd > ctemp");
 		system("touch empty");
 		systemd=!CompareFile(fopen("ctemp","rt"),fopen("empty","rt"));
 		system("rm ctemp empty");
-		cerr << (systemd?"with systemd\n":"with init.d\n");
-	#endif
-	#ifdef WIN32
-		cerr << "GetWindows\n";
+		cout << (systemd?"with systemd\n":"with init.d\n");
+	#else
+		cout << "GetWindows";
+		#if (defined PSv5)
+			cout << "with powershell v5\n";
+		#else
+			cout << "with GNU_Win32\n";
+		#endif
 	#endif
 	while (1)
 	{
-	//	cerr << "pass \n";
-		#ifdef linux
+		#if (defined linux)
 			system("rm IP.txt");
-		#endif
-		#ifdef WIN32
+		#else
 			system("del /f /q IP.txt");
 		#endif
-		command = "wget "+ url;
-		system(command.c_str());
-		ifstream fin("IP.txt");
-		fin >> IP;
-		command = "sed \"s/\\[IP\\]/ "+ IP + "/g\" frpc.ini.template > frpc.ini.new";
-		system(command.c_str());
+		#if (defined linux) || ((defined WIN32) && (!defined PSv5))
+			command = "wget "+ url;
+			system(command.c_str());
+			ifstream fin("IP.txt");
+			fin >> IP;
+			fin.close();
+			command = "sed \"s/\\[IP\\]/ "+ IP + "/g\" frpc.ini.template > frpc.ini.new";
+			system(command.c_str());
+		#else
+			command = "powershell wget " + url + " -out IP.txt";
+			system(command.c_str());
+			ifstream fin("IP.txt");
+			fin >> IP;
+			fin.close();
+			command = "powershell  \"Get-Content \'frpc.ini.template\' | %{Write-Host $_.Replace(\'[IP]\',\'" + IP + "\')}\" > frpc.ini.new";
+			system(command.c_str());
+		#endif
 		fa = fopen("frpc.ini","rt");
 		fb = fopen("frpc.ini.new","rt");
 		if (!CompareFile(fa,fb))
 		{
 			fclose(fa),fclose(fb);
-			#ifdef linux
+			#if (defined linux)
 				system(systemd?"systemctl stop frpc":"/etc/init.d/frpc stop");
 				system("mv frpc.ini.new frpc.ini");
 				system("chmod 777 frpc.ini");
 				system(systemd?"systemctl start frpc":"/etc/init.d/frpc start");
-			#endif
-			#ifdef WIN32
+			#else
 				system("net stop frpc");
 				system("copy /Y frpc.ini.new frpc.ini");
 				system("del /f /q frpc.ini.new");
@@ -90,10 +91,9 @@ int main()
 			#endif
 		}
 		fclose(fa),fclose(fb);
-		#ifdef linux
+		#if (defined linux)
 			sleep(30);
-		#endif
-		#ifdef WIN32
+		#else
 			Sleep(30000);
 		#endif
 	}
