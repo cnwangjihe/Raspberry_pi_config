@@ -81,6 +81,7 @@ int main()
 		fb = fopen("frpc.ini.new","rt");
 		if (!CompareFile(fa,fb))
 		{
+			fclose(fa),fclose(fb);
 			#ifdef linux
 				system(systemd?"systemctl stop frpc":"/etc/init.d/frpc stop");
 				system("mv frpc.ini.new frpc.ini");
