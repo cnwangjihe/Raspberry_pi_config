@@ -75,7 +75,7 @@ int main()
 		#endif
 		fa = fopen("frpc.ini","rt");
 		fb = fopen("frpc.ini.new","rt");
-		if (!CompareFile(fa,fb))
+		if (fa==NULL || !CompareFile(fa,fb))
 		{
 			fclose(fa),fclose(fb);
 			#if (defined linux)

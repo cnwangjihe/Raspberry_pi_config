@@ -146,6 +146,7 @@ To see the template please click [here](./template_for_systemd)
 ### WinSW ###
 
 Use WinSW to install service on Windows.  
+Please install .Net 4.  
 [Here](https://github.com/kohsuke/winsw) has detailed information.  
 An [example](./WinSW.xml) for frpc.  
 *Notice: if you see the error"WMI Operation failure: AccessDenied",Please check if you have used cipher to encrypt your files.*
@@ -157,4 +158,7 @@ Others
     tar -zxvf *.tar.gz # unzip
     git -C /home/wangjihe/raspIP/ # set the location of git repositories
     top -u pi # like taskmgr
+    tar -cvf /tmp/etc.tar /etc # Only bale, not compress
+    tar -czvf /tmp/etc.tar.gz /etc # compress with gzip
+    tar -cjvf /tmp/etc.tar.bz2 /etc # compress with bzip2
 ```
