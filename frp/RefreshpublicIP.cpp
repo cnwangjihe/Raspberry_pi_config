@@ -77,7 +77,9 @@ int main()
 		fb = fopen("frpc.ini.new","rt");
 		if (fa==NULL || !CompareFile(fa,fb))
 		{
-			fclose(fa),fclose(fb);
+			if (fa!=NULL)
+				fclose(fa);
+			fclose(fb);
 			#if (defined __linux__)
 				system(systemd?"systemctl stop frpc":"/etc/init.d/frpc stop");
 				system("mv frpc.ini.new frpc.ini");
@@ -90,7 +92,8 @@ int main()
 				system("net start frpc");
 			#endif
 		}
-		fclose(fa),fclose(fb);
+		else
+			fclose(fa),fclose(fb);
 		#if (defined __linux__)
 			sleep(30);
 		#else
