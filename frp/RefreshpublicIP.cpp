@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <string>
-#if (defined WIN32)
+#if (defined _WIN32)
 	#include <windows.h>
 #else
 	#include <unistd.h>
@@ -34,7 +34,7 @@ bool CompareFile(FILE *fa,FILE *fb)
 
 int main()
 {
-	#if (defined linux)
+	#if (defined __linux__)
 		cout << "GetLinux\n";
 		system("ps -eaf | grep [s]ystemd > ctemp");
 		system("touch empty");
@@ -51,12 +51,12 @@ int main()
 	#endif
 	while (1)
 	{
-		#if (defined linux)
+		#if (defined __linux__)
 			system("rm IP.txt");
 		#else
 			system("del /f /q IP.txt");
 		#endif
-		#if (defined linux) || ((defined WIN32) && (!defined PSv5))
+		#if (defined __linux__) || ((defined _WIN32) && (!defined PSv5))
 			command = "wget "+ url;
 			system(command.c_str());
 			ifstream fin("IP.txt");
@@ -78,7 +78,7 @@ int main()
 		if (fa==NULL || !CompareFile(fa,fb))
 		{
 			fclose(fa),fclose(fb);
-			#if (defined linux)
+			#if (defined __linux__)
 				system(systemd?"systemctl stop frpc":"/etc/init.d/frpc stop");
 				system("mv frpc.ini.new frpc.ini");
 				system("chmod 777 frpc.ini");
@@ -91,7 +91,7 @@ int main()
 			#endif
 		}
 		fclose(fa),fclose(fb);
-		#if (defined linux)
+		#if (defined __linux__)
 			sleep(30);
 		#else
 			Sleep(30000);
