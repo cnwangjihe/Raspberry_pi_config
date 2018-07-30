@@ -7,6 +7,7 @@ Group=root
 Type=simple
 ExecStart=/root/1
 ExecStop=killall 1
+WorkingDirectory=/usr/bin/
 
 [Install]
 WantedBy=multi-user.target

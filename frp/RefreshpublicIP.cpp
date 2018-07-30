@@ -32,21 +32,22 @@ bool CompareFile(FILE *fa,FILE *fb)
 	return !(feof(fa)^feof(fb));
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	#if (defined __linux__)
-		cout << "GetLinux\n";
+		cerr << "GetLinux\n";
 		system("ps -eaf | grep [s]ystemd > ctemp");
 		system("touch empty");
 		systemd=!CompareFile(fopen("ctemp","rt"),fopen("empty","rt"));
 		system("rm ctemp empty");
-		cout << (systemd?"with systemd\n":"with init.d\n");
+		cerr << (systemd?"with systemd\n":"with init.d\n");
+		
 	#else
-		cout << "GetWindows ";
+		cerr << "GetWindows ";
 		#if (defined PSv5)
-			cout << "with powershell v5\n";
+			cerr << "with powershell v5\n";
 		#else
-			cout << "with GNU_Win32\n";
+			cerr << "with GNU_Win32\n";
 		#endif
 	#endif
 	while (1)

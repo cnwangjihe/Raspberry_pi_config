@@ -152,7 +152,7 @@ inline void _write(string IP)
 	system(command.c_str());
 	command="git -C "+path+" push";
 	system(command.c_str());
-	cout << IP << "  updated\n";
+	cerr << IP << "  updated\n";
 	return ;
 }
 
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 {
 	int cnt=0;
 	expand_user(path);
-	cout << path << endl;
+	cerr << path << endl;
 	while (1)
 	{
 		cnt++;
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 					_write(publicIP);
 			}
 			#ifdef DEBUG
-				cout << time(NULL) << "  :  " << publicIP << endl;
+				cerr << time(NULL) << "  :  " << publicIP << endl;
 			#endif
 		}
 		else

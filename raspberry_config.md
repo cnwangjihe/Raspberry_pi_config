@@ -135,7 +135,8 @@ To see the template please click [here](./template_for_initd)
 ### systemd ###
 
 Use systemd to manage service.
-You need to change the value of `Description`,`User`,`Group`(*the same as User*),`ExecStart`and`ExecStop`
+You need to change the value of `Description`,`User`,`Group`(*the same as User*),`WorkingDirectory`,`ExecStart`and`ExecStop`.
+*Notice:The space in WorkingDirectory should be replaced by \x20*
 To see the template please click [here](./template_for_systemd)  
 ```Bash
     sudo cp template_for_systemd /etc/systemd/system/YOUR_SERVICE.service
@@ -161,4 +162,5 @@ Others
     tar -cvf /tmp/etc.tar /etc # Only bale, not compress
     tar -czvf /tmp/etc.tar.gz /etc # compress with gzip
     tar -cjvf /tmp/etc.tar.bz2 /etc # compress with bzip2
+    # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
 ```
