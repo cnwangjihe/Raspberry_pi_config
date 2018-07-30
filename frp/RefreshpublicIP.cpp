@@ -42,7 +42,7 @@ int main()
 		system("rm ctemp empty");
 		cout << (systemd?"with systemd\n":"with init.d\n");
 	#else
-		cout << "GetWindows";
+		cout << "GetWindows ";
 		#if (defined PSv5)
 			cout << "with powershell v5\n";
 		#else
