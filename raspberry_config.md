@@ -81,7 +81,7 @@ Helpful Parts
 
 ### part 2 install transmission with apt ###
 ```Bash
-    sudo apt-get install transmission
+    sudo apt-get install transmission-daemon
 ```
 
 ### part 3 install transmission with sources code ###
