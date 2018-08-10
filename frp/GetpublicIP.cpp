@@ -145,9 +145,7 @@ inline void _write(string IP)
 	ofstream fout(command.c_str());
 	fout << IP << endl;
 	fout.close();
-	tran << time(NULL);
-	tmp="";
-	tran >> tmp;
+	tmp=to_string(time(NULL));
 	command="git -C "+path+" commit -a -m "+tmp;
 	system(command.c_str());
 	command="git -C "+path+" push";
@@ -168,6 +166,7 @@ inline string _read()
 
 int main(int argc, char *argv[])
 {
+	int tty;
 	int cnt=0;
 	expand_user(path);
 	cerr << path << endl;
@@ -179,17 +178,28 @@ int main(int argc, char *argv[])
 		{
 			if (usedIP!=publicIP)
 			{
+				tty++;
 				_write(publicIP);
+				#ifdef DEBUG
+					cerr << time(NULL) << "  :  " << publicIP << endl;
+				#endif
 				usedIP=publicIP;
 			}
 			else
 			{
 				if (cnt==0 && (_read()!=publicIP))
 					_write(publicIP);
+				else
+				{
+					#ifdef DEBUG
+						if (tty<2)
+						{
+							_write(publicIP);
+							tty++;
+						}
+					#endif
+				}
 			}
-			#ifdef DEBUG
-				cerr << time(NULL) << "  :  " << publicIP << endl;
-			#endif
 		}
 		else
 			sleep(20);
