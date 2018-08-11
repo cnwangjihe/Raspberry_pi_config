@@ -28,6 +28,7 @@ char url[] = "www.3322.org/dyndns/getip";
 stringstream tran;
 string command,tmp;
 string path="~/raspIP/";
+string token;
 
 bool getPublicIP()
 {
@@ -151,6 +152,11 @@ inline void _write(string IP)
 	command="git -C "+path+" push";
 	system(command.c_str());
 	cerr << IP << "  updated\n";
+	command="curl -X POST https://dnsapi.cn/Record.Modify -d \'login_token="+token+"&format=json&domain=wangjihe.tk&record_id=374900764&sub_domain=@&value="+IP+"&record_type=A&record_line=默认\'";
+	#ifdef DEBUG
+		cerr << command << '\n';
+	#endif
+	system(command.c_str());
 	return ;
 }
 
@@ -170,10 +176,14 @@ int main(int argc, char *argv[])
 	int cnt=0;
 	expand_user(path);
 	cerr << path << endl;
+	string tmp=path+"GetpublicIP.setting";
+	ifstream ftoken(tmp.c_str());
+	ftoken>>token;
+	ftoken.close();
 	while (1)
 	{
 		cnt++;
-		cnt%=30;
+		cnt%=100;
 		if (getPublicIP())
 		{
 			if (usedIP!=publicIP)
