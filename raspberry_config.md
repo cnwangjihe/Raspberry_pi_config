@@ -127,21 +127,22 @@ use [let's encrypt](https://letsencrypt.org/)
 Use acme.sh to set up  
 
 ```Bash
+    DOMAIN=wangjihe.tk
     curl https://get.acme.sh | sh
-    acme.sh=~/.acme.sh/acme.sh
+    alias acme.sh=~/.acme.sh/acme.sh
     # sudo -- sh -c -e "echo '45 0 * * * sudo \"/home/pi/.acme.sh\"/acme.sh --cron --home \"/home/pi/.acme.sh\" > /dev/null' >> /var/spool/cron/crontabs/pi"
     sudo mkdir /etc/nginx/ssl 
     sudo chmod -R 777 /etc/nginx/ssl
-    mkdir /etc/nginx/ssl/wangjihe.tk
+    mkdir /etc/nginx/ssl/$DOMAIN
     export DP_Id="XXXXXX"
     export DP_Key="XXXXXXXXXXXXX"
     # use the api of DNSpod
-    acme.sh --issue --dns dns_dp -d wangjihe.tk
-    acme.sh --install-cert -d wangjihe.tk \
-    --cert-file      /etc/nginx/ssl/wangjihe.tk/cert.pem  \
-    --key-file       /etc/nginx/ssl/wangjihe.tk/privkey.pem  \
-    --fullchain-file /etc/nginx/ssl/wangjihe.tk/fullchain.pem \
-    --ca-file      /etc/nginx/ssl/wangjihe.tk/chain.pem  \
+    acme.sh --issue --dns dns_dp -d $DOMAIN
+    acme.sh --install-cert -d $DOMAIN \
+    --cert-file      /etc/nginx/ssl/$DOMAIN/cert.pem  \
+    --key-file       /etc/nginx/ssl/$DOMAIN/privkey.pem  \
+    --fullchain-file /etc/nginx/ssl/$DOMAIN/fullchain.pem \
+    --ca-file      /etc/nginx/ssl/$DOMAIN/chain.pem  \
     --reloadcmd     "sudo service nginx force-reload"
     # acme.sh --renew -d example.com --force
     # force refresh
@@ -154,19 +155,20 @@ then deploy nginx
 use certbot *(Not recommended)*  
 
 ```Bash
-    sudo apt-get install python-certbot-nginx
+    DOMAIN=wangjihe.tk
     # if you use apache, replace -nginx with -apache
     sudo certbot --manual --preferred-challenges dns certonly
     sudo mkdir /etc/nginx/ssl 
     sudo chmod -R 777 /etc/nginx/ssl
-    mkdir /etc/nginx/ssl/wangjihe.tk
-    cp /etc/letsencrypt/live/wangjihe.tk/fullchain.pem /etc/nginx/wangjihe.tk/fullchain.pem 
-    cp /etc/letsencrypt/live/wangjihe.tk/privkey.pem /etc/nginx/wangjihe.tk/privkey.pem 
-    cp /etc/letsencrypt/live/wangjihe.tk/chain.pem /etc/nginx/wangjihe.tk/chain.pem 
+    mkdir /etc/nginx/ssl/$DOMAIN
+    cp /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/nginx/$DOMAIN/fullchain.pem 
+    cp /etc/letsencrypt/live/$DOMAIN/privkey.pem /etc/nginx/$DOMAIN/privkey.pem 
+    cp /etc/letsencrypt/live/$DOMAIN/chain.pem /etc/nginx/$DOMAIN/chain.pem 
     # use DNS to get cert(it won't update automatically,and you need to change xxx.conf by yourself)
 ```
 Or  
 ```Bash
+    sudo apt-get install python-certbot-nginx
     sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
 ```  
 
