@@ -21,3 +21,4 @@ frp port name rules
 422:wgs_253.253
 423:wgs_25
 500-599:temp
+##7111 proxy ##

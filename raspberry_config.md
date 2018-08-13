@@ -7,19 +7,19 @@ Some experience after testing for a long time.
 Necessary Steps
 ---------------
 
-### step 1 change the password ###
+### Step 1 change the password ###
 ```Bash
     passwd # user:pi,oldpsw:raspberry
 ```
 
-### step 2 configure the ssh ###
+### Step 2 configure the ssh ###
 ```Bash
     sudo nano /etc/ssh/ssh_config #set "GSSAPIAuthentication no"
     sudo nano /etc/ssh/sshd_config #set "UseDNS no"
     # then reboot
 ```
 
-### step 3 set static IP ###
+### Step 3 set static IP ###
 ```Bash
     # sudo nano /etc/dhcpcd.conf
     sudo echo 'interface eth0'>>/etc/dhcpcd.conf
@@ -28,7 +28,7 @@ Necessary Steps
     sudo echo 'static domain_name_servers=114.114.114.114 8.8.8.8'>>/etc/dhcpcd.conf
 ```
 
-### step 4 edit hosts && change the source ###
+### Step 4 edit hosts && change the source ###
 ```Bash
     # sudo nano /etc/hosts
     sudo -- sh -c -e "sudo echo '151.101.72.249 http://global-ssl.fastly.Net'>>/etc/hosts"
@@ -40,12 +40,12 @@ Necessary Steps
     sudo apt-get update && sudo apt-get upgrade 
 ```
 
-### step 5 install necessary packages ###
+### Step 5 install necessary packages ###
 ```Bash
     sudo apt-get install vim gdbserver g++ systemd git 
 ```
 
-### step 6 install ntfs support ###
+### Step 6 install ntfs support ###
 ```Bash
     sudo su
     cd /usr/local/src
@@ -64,7 +64,7 @@ Necessary Steps
 Helpful Parts
 -------------
 
-### part 1 install openssl with sources code ###
+### Part 1 install openssl with sources code ###
 ```Bash
     # sudo apt-get remove openssl
     wget https://ftp.openssl.org/source/old/1.0.0/openssl-1.0.0.tar.gz
@@ -79,12 +79,12 @@ Helpful Parts
     exit
 ```
 
-### part 2 install transmission with apt ###
+### Part 2 install transmission with apt ###
 ```Bash
     sudo apt-get install transmission-daemon
 ```
 
-### part 3 install transmission with sources code ###
+### Part 3 install transmission with sources code ###
 
 Don't use this kind of ways!!!!  
 It is difficult to succeed.  
@@ -99,7 +99,7 @@ It is difficult to succeed.
     # then install service
 ```
 
-### part 4 install frp-server on linux ###
+### Part 4 install frp-server on linux ###
 
 ```Bash
     wget https://github.com/fatedier/frp/releases/download/v0.20.0/frp_0.20.0_linux_arm.tar.gz
@@ -110,7 +110,8 @@ It is difficult to succeed.
     # then install service
 ```
 
-### part 5 git with ssh ###
+### Part 5 git with ssh ###
+
 ```Bash
     ssh-keygen -t rsa -C "1321942045@qq.com"
     # ignore location ans passphrase.
@@ -118,6 +119,66 @@ It is difficult to succeed.
     # Copy the text in id_rsa.pub to profile(github or gitlab), to add new ssh key.
 ```
 
+### Part 6 use ssl to connect web interface ###
+
+use [let's encrypt](https://letsencrypt.org/)
+```Bash
+    sudo apt-get install python-certbot-nginx
+    # if you use apache, replace -nginx with -apache
+    sudo certbot --manual --preferred-challenges dns certonly
+    # use DNS to get cert(it won't update automaticly,and you need to change xxx.conf by yourself)
+    sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
+```  
+
+This file in /etc/nginx/conf.d/xxx.conf  
+
+```
+server {
+        listen 443;
+        listen 80;
+        ssl on;
+        server_name wangjihe.tk;
+        ssl_certificate /etc/letsencrypt/live/wangjihe.tk/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/wangjihe.tk/privkey.pem;
+        ssl_trusted_certificate /etc/letsencrypt/live/wangjihe.tk/chain.pem;
+        location ~* / {
+                auth_basic "\n";
+                auth_basic_user_file /etc/nginx/password; 
+                proxy_pass http://127.0.0.1:10101; 
+        }
+        error_page 497  https://$host$uri?$args;
+
+}
+```  
+
+And remenber to change the password  
+
+```Bash
+    echo -n 'USERNAME:' >>/etc/nginx/password
+    openssl passwd PASSWORD >>/etc/nginx/password
+    # better not longer than 8
+```
+
+more information:  
+[Let's encrypt with DNS in TXT](https://blog.csdn.net/u012291393/article/details/78768547)  
+[Transmission web interface with SSL](https://moeclub.org/2017/07/11/318)  
+
+### Part 7 squid ###
+
+squid is a powerful proxy.  
+
+```Bash
+    sudo apt-get install squid
+    sudo nano /etc/squid/squid.conf
+```
+
+Add these to the front of squid.conf  
+
+```
+    http_port 7111
+    http_access allow all
+    acl localnet src 192.168.1.0/24
+```
 
 Create Services.
 ------
