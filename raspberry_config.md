@@ -122,18 +122,60 @@ It is difficult to succeed.
 ### Part 6 use ssl to connect web interface ###
 
 use [let's encrypt](https://letsencrypt.org/)
+
+####The first way:  ####
+Use acme.sh to set up  
+
+```Bash
+    curl https://get.acme.sh | sh
+    acme.sh=~/.acme.sh/acme.sh
+    # sudo -- sh -c -e "echo '45 0 * * * sudo \"/home/pi/.acme.sh\"/acme.sh --cron --home \"/home/pi/.acme.sh\" > /dev/null' >> /var/spool/cron/crontabs/pi"
+    sudo mkdir /etc/nginx/ssl 
+    sudo chmod -R 777 /etc/nginx/ssl
+    mkdir /etc/nginx/ssl/wangjihe.tk
+    export DP_Id="XXXXXX"
+    export DP_Key="XXXXXXXXXXXXX"
+    # use the api of DNSpod
+    acme.sh --issue --dns dns_dp -d wangjihe.tk
+    acme.sh --install-cert -d wangjihe.tk \
+    --cert-file      /etc/nginx/ssl/wangjihe.tk/cert.pem  \
+    --key-file       /etc/nginx/ssl/wangjihe.tk/privkey.pem  \
+    --fullchain-file /etc/nginx/ssl/wangjihe.tk/fullchain.pem \
+    --ca-file      /etc/nginx/ssl/wangjihe.tk/chain.pem  \
+    --reloadcmd     "sudo service nginx force-reload"
+    # acme.sh --renew -d example.com --force
+    # force refresh
+    acme.sh --upgrade --auto-upgrade # update automatically
+```
+then deploy nginx  
+
+
+#### The second way:  ####
+use certbot *(Not recommended)*  
+
 ```Bash
     sudo apt-get install python-certbot-nginx
     # if you use apache, replace -nginx with -apache
     sudo certbot --manual --preferred-challenges dns certonly
-    # use DNS to get cert(it won't update automaticly,and you need to change xxx.conf by yourself)
+    sudo mkdir /etc/nginx/ssl 
+    sudo chmod -R 777 /etc/nginx/ssl
+    mkdir /etc/nginx/ssl/wangjihe.tk
+    cp /etc/letsencrypt/live/wangjihe.tk/fullchain.pem /etc/nginx/wangjihe.tk/fullchain.pem 
+    cp /etc/letsencrypt/live/wangjihe.tk/privkey.pem /etc/nginx/wangjihe.tk/privkey.pem 
+    cp /etc/letsencrypt/live/wangjihe.tk/chain.pem /etc/nginx/wangjihe.tk/chain.pem 
+    # use DNS to get cert(it won't update automatically,and you need to change xxx.conf by yourself)
+```
+Or  
+```Bash
     sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
 ```  
 
-This file in /etc/nginx/conf.d/xxx.conf  
+
+#### Template of /etc/nginx/conf.d/xxx.conf  ####
 
 ```
-server {
+server
+{
         listen 443;
         listen 80;
         ssl on;
@@ -141,7 +183,8 @@ server {
         ssl_certificate /etc/letsencrypt/live/wangjihe.tk/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/wangjihe.tk/privkey.pem;
         ssl_trusted_certificate /etc/letsencrypt/live/wangjihe.tk/chain.pem;
-        location ~* / {
+        location ~* /
+        {
                 auth_basic "\n";
                 auth_basic_user_file /etc/nginx/password; 
                 proxy_pass http://127.0.0.1:10101; 
