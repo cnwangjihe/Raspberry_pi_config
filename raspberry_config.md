@@ -127,19 +127,23 @@ use [let's encrypt](https://letsencrypt.org/)
 Use acme.sh to set up  
 
 ```Bash
-    DOMAIN=wangjihe.tk
     curl https://get.acme.sh | sh
     alias acme.sh=~/.acme.sh/acme.sh
     # sudo -- sh -c -e "echo '45 0 * * * sudo \"/home/pi/.acme.sh\"/acme.sh --cron --home \"/home/pi/.acme.sh\" > /dev/null' >> /var/spool/cron/crontabs/pi"
     sudo mkdir /etc/nginx/ssl 
     sudo chmod -R 777 /etc/nginx/ssl
-    mkdir /etc/nginx/ssl/$DOMAIN
     export DP_Id="XXXXXX"
     export DP_Key="XXXXXXXXXXXXX"
     # use the api of DNSpod
+    DOMAIN=wangjihe.tk
+    mkdir /etc/nginx/ssl/$DOMAIN
     acme.sh --issue --dns dns_dp -d $DOMAIN
+    # if you use cloudflare
+    # CF_Email=XXX@XX.XX
+    # CF_Key=XXXXXXXXX
+    # acme.sh --issue --dns dns_cf -d $DOMAIN
     acme.sh --install-cert -d $DOMAIN \
-    --cert-file      /etc/nginx/ssl/$DOMAIN/cert.pem  \
+    --cert-file      /etc/nginx/ssl/$DOMAIN/ca.pem  \
     --key-file       /etc/nginx/ssl/$DOMAIN/privkey.pem  \
     --fullchain-file /etc/nginx/ssl/$DOMAIN/fullchain.pem \
     --ca-file      /etc/nginx/ssl/$DOMAIN/chain.pem  \
