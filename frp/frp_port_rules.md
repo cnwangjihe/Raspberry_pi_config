@@ -5,11 +5,8 @@ frp port name rules
 4:remote desktop
 5:frps_tcp_udp
 6:BT
-7-9:web interface
-{
-	7:frps
-	9:transmission
-}
+7:proxy
+9:web interface
 ## other three numbers ##
 118:router
 101:raspberry pi
@@ -21,4 +18,3 @@ frp port name rules
 422:wgs_253.253
 423:wgs_25
 500-599:temp
-##7111 proxy ##
