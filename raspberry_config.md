@@ -229,6 +229,27 @@ Add these to the front of squid.conf
     acl localnet src 192.168.1.0/24
 ```
 
+### Part 8 samba ###  
+
+```Bash
+    sudo apt-get install samba samba-common-bin
+    sudo pdbedit –a pi
+    sudo nano /etc/samba/smb.conf
+    {
+        [HDD0]
+            comment=HDD0
+            path=/mnt/HDD0
+            browseable=yes
+            writable=yes
+            available=yes
+            admin users=pi
+            valid users=pi
+            write list=pi
+            public=no
+    }
+    sudo systemctl restart smbd
+```
+
 Create Services.
 ------
 
