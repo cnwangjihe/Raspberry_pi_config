@@ -5,6 +5,7 @@ Description=GetPublicIP daemon
 Type=simple
 ExecStart=/home/pi/GetpublicIP
 ExecStop=/usr/bin/killall GetpublicIP
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

@@ -5,6 +5,7 @@ Description=RefreshpublicIP daemon
 Type=simple
 ExecStart=/home/tmp/RefreshpublicIP
 ExecStop=/usr/bin/killall RefreshpublicIP
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

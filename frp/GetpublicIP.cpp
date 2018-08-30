@@ -20,12 +20,11 @@
 using namespace std;
 
 #define BUF_SIZE 512
-string publicIP,usedIP;
+string publicIP;
 int sd;
 int len;
 char buf[BUF_SIZE],GET[100],header[240],tIP[20],myurl[100];
 char url[] = "www.3322.org/dyndns/getip";
-stringstream tran;
 string command,tmp;
 string path="~/raspIP/";
 
@@ -158,14 +157,18 @@ inline void _write(string IP)
 	return ;
 }
 
-inline string _read()
+inline bool _check(string nIP)
 {
 	string IP;
 	command=path+"IP.txt";
 	ifstream fin(command.c_str());
+	if (fin.fail())
+		return 1;
 	fin >> IP;
 	fin.close();
-	return IP;
+	if (IP!=nIP)
+		return 1;
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -180,34 +183,10 @@ int main(int argc, char *argv[])
 	ftoken.close();*/
 	while (1)
 	{
-		cnt++;
-		cnt%=100;
 		if (getPublicIP())
 		{
-			if (usedIP!=publicIP)
-			{
-				tty++;
+			if (_check(publicIP))
 				_write(publicIP);
-				#ifdef DEBUG
-					cerr << time(NULL) << "  :  " << publicIP << endl;
-				#endif
-				usedIP=publicIP;
-			}
-			else
-			{
-				if (cnt==0 && (_read()!=publicIP))
-					_write(publicIP);
-				else
-				{
-					#ifdef DEBUG
-						if (tty<2)
-						{
-							_write(publicIP);
-							tty++;
-						}
-					#endif
-				}
-			}
 		}
 		else
 			sleep(20);
