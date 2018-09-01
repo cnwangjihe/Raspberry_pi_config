@@ -6,6 +6,7 @@ Type=simple
 ExecStart=/home/pi/GetpublicIP
 ExecStop=/usr/bin/killall GetpublicIP
 Restart=always
+RestartSec=10s
 
 [Install]
 WantedBy=multi-user.target

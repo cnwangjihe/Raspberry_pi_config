@@ -22,11 +22,11 @@ using namespace std;
 #define BUF_SIZE 512
 string publicIP;
 int sd;
-int len;
+int len,cnt,c;
 char buf[BUF_SIZE],GET[100],header[240],tIP[20],myurl[100];
 char url[] = "www.3322.org/dyndns/getip";
 string command,tmp;
-string path="~/raspIP/";
+string path="/home/pi/raspIP/";
 
 bool getPublicIP()
 {
@@ -121,7 +121,7 @@ bool getPublicIP()
 	}
 }
 
-
+/*
 void expand_user(string& path)
 {
 	if (!path.empty() && path[0] == '~')
@@ -137,7 +137,7 @@ void expand_user(string& path)
 		}
 	}
 }
-
+*/
 inline void _write(string IP)
 {
 	command=path+"IP.txt";
@@ -174,8 +174,7 @@ inline bool _check(string nIP)
 int main(int argc, char *argv[])
 {
 	int tty;
-	int cnt=0;
-	expand_user(path);
+//	expand_user(path);
 	cerr << path << endl;
 /*	string tmp=path+"GetpublicIP.setting";
 	ifstream ftoken(tmp.c_str());
@@ -185,12 +184,16 @@ int main(int argc, char *argv[])
 	{
 		if (getPublicIP())
 		{
+			cnt++;
+			cnt%=1000;
 			if (_check(publicIP))
 				_write(publicIP);
 		}
 		else
 			sleep(20);
 		sleep(15);
+		if (cnt==0)
+			cerr << "Succeed for " << ++c << "000 times\n";
 	}
 	return 0;
 }
