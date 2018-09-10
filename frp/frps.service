@@ -1,10 +1,10 @@
 [Unit]
-Description=frpc daemon
+Description=frps daemon
 
 [Service]
 Type=simple
-ExecStart=/home/tmp/frp_0.20.0_linux_amd64/frpc -c /home/tmp/frp_0.20.0_linux_amd64/frpc.ini
-ExecStop=/usr/bin/killall frpc
+ExecStart=/usr/bin/frps -c /etc/frps/frps.ini
+ExecStop=/usr/bin/killall frps
 
 [Install]
 WantedBy=multi-user.target
