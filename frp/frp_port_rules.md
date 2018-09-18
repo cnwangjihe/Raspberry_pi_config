@@ -6,7 +6,8 @@ frp port name rules
 5:frps_tcp_udp
 6:BT
 7:proxy
-9:web interface
+8:frps web interface (Protected)
+9:web interface (Protected)
 ## other three numbers ##
 118:router
 101:raspberry pi
