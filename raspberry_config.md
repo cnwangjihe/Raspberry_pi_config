@@ -15,7 +15,7 @@ Necessary Steps
 ### Step 2 configure the ssh ###
 ```Bash
     sudo nano /etc/ssh/ssh_config #set "GSSAPIAuthentication no"
-    sudo nano /etc/ssh/sshd_config #set "UseDNS no"
+    sudo nano /etc/ssh/sshd_config #set "UseDNS no && Port 2101"
     # then reboot
 ```
 
@@ -23,8 +23,8 @@ Necessary Steps
 ```Bash
     # sudo nano /etc/dhcpcd.conf
     sudo echo 'interface eth0'>>/etc/dhcpcd.conf
-    sudo echo 'inform 192.168.1.101'>>/etc/dhcpcd.conf
-    sudo echo 'static routers=192.168.1.118'>>/etc/dhcpcd.conf
+    sudo echo 'inform 192.168.31.101'>>/etc/dhcpcd.conf
+    sudo echo 'static routers=192.168.31.1'>>/etc/dhcpcd.conf
     sudo echo 'static domain_name_servers=114.114.114.114 8.8.8.8'>>/etc/dhcpcd.conf
 ```
 
@@ -42,7 +42,7 @@ Necessary Steps
 
 ### Step 5 install necessary packages ###
 ```Bash
-    sudo apt-get install vim gdbserver g++ systemd git 
+    sudo apt-get install vim gdbserver g++ systemd git ufw
 ```
 
 ### Step 6 install ntfs support ###
@@ -60,6 +60,12 @@ Necessary Steps
     # sudo mount -t ntfs-3g /dev/sdb1 /mnt/usb
 ```
 
+### Step 7 Security ###
+```Bash
+    sudo ufw allow 2101
+    sudo ufw enable
+    sudo reboot
+```
 
 Helpful Parts
 -------------
@@ -102,11 +108,16 @@ It is difficult to succeed.
 ### Part 4 install frp-server on linux ###
 
 ```Bash
-    wget https://github.com/fatedier/frp/releases/download/v0.20.0/frp_0.20.0_linux_arm.tar.gz
-    tar -zxvf frp_0.20.0_linux_arm.tar.gz
-    cd frp_0.20.0_linux_arm
-    rm frpc && rm frpc.ini
-    nano ./frps.ini # ./frp/frps.ini
+    wget https://github.com/fatedier/frp/releases/download/v0.21.0/frp_0.21.0_linux_arm.tar.gz
+    tar -zxvf frp_0.21.0_linux_arm.tar.gz
+    cd frp_0.21.0_linux_arm
+    sudo cp ./frps /usr/bin
+    sudo mkdir /etc/frps
+    sudo cp ./frps.ini /etc/frps
+    cd ..
+    rm -rf frp_0.21.0_linux_arm
+    rm frp_0.21.0_linux_arm.tar.gz
+    cd /etc/frps
     # then install service
 ```
 
@@ -186,7 +197,7 @@ server
         listen 80;
         ssl on;
         server_name wangjihe.tk;
-        ssl_certificate /etc/letsencrypt/live/wangjihe.tk/fullchain.pem;
+        ssl_certificate /etc/nginx/ssl/wangjihe.tk/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/wangjihe.tk/privkey.pem;
         ssl_trusted_certificate /etc/letsencrypt/live/wangjihe.tk/chain.pem;
         location ~* /
