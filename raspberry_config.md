@@ -67,6 +67,13 @@ Necessary Steps
     sudo reboot
 ```
 
+### Step 8 Set timezone ###
+```Bash
+    tzselect
+    sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+    date
+```
+
 Helpful Parts
 -------------
 
