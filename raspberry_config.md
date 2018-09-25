@@ -114,7 +114,8 @@ It is difficult to succeed.
     wget https://raw.githubusercontent.com/transmission/transmission-releases/master/transmission-2.94.tar.xz # Don't use the wrong url
     tar -xf transmission-2.94.tar.xz
     cd transmission-2.94
-    ./configure --prefix=/usr && make && make install
+    ./configure --prefix=/usr && make
+    sudo make install
     sudo nano /etc/systemd/system/transmission-daemon.service
     {
         [Unit]
