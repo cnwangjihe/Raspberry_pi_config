@@ -78,6 +78,8 @@ Helpful Parts
 -------------
 
 ### Part 1 install openssl with sources code ###
+
+*Not useful any more*  
 ```Bash
     # sudo apt-get remove openssl
     wget https://ftp.openssl.org/source/old/1.0.0/openssl-1.0.0.tar.gz
@@ -93,24 +95,50 @@ Helpful Parts
 ```
 
 ### Part 2 install transmission with apt ###
+
+**Attention!!!**  
+Raspbian's apt- will install version 2.92,but it has a serious vulnerability.  
+So, after you install it with apt, you should follow [Part 3](#part-3-install-transmission-with-sources-code)
+
 ```Bash
     sudo apt-get install transmission-daemon
 ```
 
 ### Part 3 install transmission with sources code ###
 
-Don't use this kind of ways!!!!  
+Don't use this kind of way(unless you use raspbian)  
 It is difficult to succeed.  
 
 ```Bash
-    sudo apt-get install wget libcurl4-openssl-dev libevent-dev ca-certificates libssl-dev pkg-config build-essential intltool
-    git clone https://github.com/superlukia/transmission-2.92_skiphashcheck.git
-    cd transmission-2.92_skiphashcheck/
-    ./configure
-    make && sudo make install
-    # sudo nano /usr/local/share/transmission/settings.json
-    # then install service
+    sudo apt-get install build-essential automake autoconf libtool pkg-config intltool libcurl4-openssl-dev libglib2.0-dev libevent-dev libminiupnpc-dev libgtk-3-dev libappindicator3-dev ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall
+    wget https://raw.githubusercontent.com/transmission/transmission-releases/master/transmission-2.94.tar.xz # Don't use the wrong url
+    tar -xf transmission-2.94.tar.xz
+    cd transmission-2.94
+    ./configure --prefix=/usr && make && make install
+    sudo nano /etc/systemd/system/transmission-daemon.service
+    {
+        [Unit]
+        Description=Transmission BitTorrent Daemon
+        After=network.target
+
+        [Service]
+        User=debian-transmission
+        Type=simple
+        ExecStart=/usr/bin/transmission-daemon -f --log-error
+        ExecStop=/bin/kill -s STOP $MAINPID
+        ExecReload=/bin/kill -s HUP $MAINPID
+        Restart=always
+        RestartSec=10
+
+        [Install]
+        WantedBy=multi-user.target
+    }
+    sudo systemctl daemon-reload
+    sudo systemctl enable transmission-daemon.service
+    sudo systemctl start transmission-daemon.service
 ```
+By the way, the .config folder is at ```/var/lib/transmission-daemon```, or you can use ```sudo cat /etc/passwd``` to check the main folder of user debian-transmission(or transmission).  
+And the settings.json is at ```/etc/transmission-daemon```
 
 ### Part 4 install frp-server on linux ###
 
@@ -141,7 +169,7 @@ It is difficult to succeed.
 
 use [let's encrypt](https://letsencrypt.org/)
 
-####The first way:  ####
+#### The first way:  ####
 Use acme.sh to set up  
 
 ```Bash
@@ -268,6 +296,11 @@ Add these to the front of squid.conf
     sudo systemctl restart smbd
 ```
 
+### Part 9 DDNS ###  
+
+Support Cloudflare, Dnspod, Dns.com ...
+[DDNS](https://github.com/NewFuture/DDNS)
+
 Create Services.
 ------
 
@@ -306,6 +339,7 @@ Others
 ```Bash
     cat /sys/class/thermal/thermal_zone0/temp # check the temperature of CPU
     tar -zxvf *.tar.gz # unzip
+    tar -xf *.tar.xz # unzip
     git -C /home/wangjihe/raspIP/ # set the location of git repositories
     top -u pi # like taskmgr
     tar -cvf /tmp/etc.tar /etc # Only bale, not compress
