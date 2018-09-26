@@ -44,8 +44,14 @@ Necessary Steps
 ```Bash
     sudo apt-get install vim gdbserver g++ systemd git ufw
 ```
+### Step 6 Security ###
+```Bash
+    sudo ufw allow 2101
+    sudo ufw enable
+    sudo reboot
+```
 
-### Step 6 install ntfs support ###
+### Step 7 install ntfs support ###
 ```Bash
     sudo su
     cd /usr/local/src
@@ -60,12 +66,6 @@ Necessary Steps
     # sudo mount -t ntfs-3g /dev/sdb1 /mnt/usb
 ```
 
-### Step 7 Security ###
-```Bash
-    sudo ufw allow 2101
-    sudo ufw enable
-    sudo reboot
-```
 
 ### Step 8 Set timezone ###
 ```Bash
@@ -276,7 +276,7 @@ Add these to the front of squid.conf
     acl localnet src 192.168.1.0/24
 ```
 
-### Part 8 samba ###  
+### Part 8 samba ###
 
 ```Bash
     sudo apt-get install samba samba-common-bin
@@ -297,10 +297,46 @@ Add these to the front of squid.conf
     sudo systemctl restart smbd
 ```
 
-### Part 9 DDNS ###  
+### Part 9 DDNS ###
 
-Support Cloudflare, Dnspod, Dns.com ...
-[DDNS](https://github.com/NewFuture/DDNS)
+The project of NewFuture, [DDNS](https://github.com/NewFuture/DDNS) Support Cloudflare, Dnspod, Dns.com ...
+
+### Part 10 Setup ups ###
+
+If you have an ups of APC, you can install apcupsd to receive a power down signal.  
+
+To see whether your ups is recognized:  
+```Bash
+    lsusb
+    udevadm info --attribute-walk --name=/dev/usb/hiddev0 | egrep 'manufacturer|product|serial'
+```  
+To install apcupsd:  
+```Bash
+    sudo apt-get install apcupsd apcupsd-doc
+    sudo nano /etc/apcupsd/apcupsd.conf
+```  
+Which values you need to change(example for BK650-CH):  
+  ```UPSNAME BK650-CH```:Any name you like, It's not important.  
+  ```UPSCABLE usb```:The cable your ups uses.  
+  ```UPSTYPE usb```:The type of your ups.  
+  ```DEVICE ```:If you use usb type, you can leave it empty.  
+  ```BATTERYLEVEL 15```:If during a power failure, the remaining battery percentage that apcupsd will initiate a system shutdown.  
+  ```MINUTES 20```:After X minutes without wall power, system will be shutdown.  
+  ```TIMEOUT 0```:After X seconds without wall power, system will be shutdown.(0 means disable this option)  
+  ```KILLDELAY 0```:Shutdown will be delayed for X seconds.(0 means disable this option)  
+
+Then:  
+```Bash
+    sudo -- sh -c -e "sudo echo 'ISCONFIGURED=yes'>/etc/default/apcupsd"
+    sudo systemctl enable apcupsd
+    sudo systemctl start apcupsd
+```
+
+More information:  
+[http://www.apcupsd.com/manual/manual.html](http://www.apcupsd.com/manual/manual.html)  
+[https://wiki.archlinux.org/index.php/APC_UPS](https://wiki.archlinux.org/index.php/APC_UPS)  
+*You can find the way to change the script that apcupsd will execute*  
+[https://wiki.debian.org/apcupsd](https://wiki.debian.org/apcupsd)  
 
 Create Services.
 ------
