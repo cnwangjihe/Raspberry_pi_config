@@ -2,6 +2,7 @@
 
 #include "hash.h"
 #include "encrypt.h"
+#include "basic.h"
 
 #define ALG1 GETSHA512      //128
 #define ALG2 GETSHA256      //64
@@ -22,39 +23,69 @@
 #define ALGG GETKeccak_512  //128
 #define ALGH GETSHA3_256    //64
 #define ALGI GETSHA3_512    //128
+#define ALGJ GETAdler32     //8
 
-string GetOperationSequence(string s,int level)
+string CorrectLength(string input,int len)
+{
+	switch (len)
+	{
+		case 0 :
+			return GETAdler32(GETSHA256(input));                     //8
+		case 1 :
+			return GETRIPEMD128(GETKeccak_512(input)).erase(16,16);  //16
+		case 2 :
+			return GETMD5(GETBLAKE2b(input));                        //32
+		case 3 :
+			return GETRIPEMD160(GETSHA3_512(input));                 //40
+		case 4 :
+			return GETTiger(GETSM3(input));                          //48
+		case 5 :
+			return GETSHA224(GETWhirlpool(input));                   //56
+		case 6 :
+			return GETBLAKE2s(GETSHA3_256(input));                   //64
+		case 7 :
+			return GETRIPEMD320(GETKeccak_256(input));               //80
+		case 8 :
+			return GETSHA384(GETBLAKE2s(input));                     //96
+		case 9 :
+			return GETBLAKE2b(GETSHA512(input));                     //128
+	}
+	LogWarning(EmptyString+"The length type "+to_string(len)+" do not exist, it should be between 0~9");
+	return input;
+}
+
+string GetOperationSequence(string input,int level)
 {
 	switch (level)
 	{
 		case 0 :
-			return GETCRC32(GETSHA256(s));                 //8
+			return GETCRC32(GETSHA256(input));                 //8
 		case 1 :
-			return GETMD5(GETKeccak_512(s)).erase(16,16);  //16
+			return GETMD5(GETKeccak_512(input)).erase(16,16);  //16
 		case 2 :
-			return GETRIPEMD128(GETBLAKE2b(s));            //32
+			return GETRIPEMD128(GETBLAKE2b(input));            //32
 		case 3 :
-			return GETRIPEMD160(GETSHA3_256(s));           //40
+			return GETRIPEMD160(GETSHA3_256(input));           //40
 		case 4 :
-			return GETTiger(GETSM3(s));                    //48
+			return GETTiger(GETSM3(input));                    //48
 		case 5 :
-			return GETSHA224(GETKeccak_256(s));            //56
+			return GETSHA224(GETKeccak_256(input));            //56
 		case 6 :
-			return GETBLAKE2s(GETSHA3_512(s));             //64
+			return GETBLAKE2s(GETSHA3_512(input));             //64
 		case 7 :
-			return GETRIPEMD320(GETWhirlpool(s));          //80
+			return GETRIPEMD320(GETWhirlpool(input));          //80
 		case 8 :
-			return GETSHA384(GETRIPEMD256(s));             //96
+			return GETSHA384(GETRIPEMD256(input));             //96
 		case 9 :
-			return GETSHA3_512(GETSHA512(s));              //128
+			return GETSHA3_512(GETSHA512(input));              //128
 	}
 	LogWarning(EmptyString+"The security level "+to_string(level)+" do not exist, it should be between 0~9");
 	return "";
 }
 
-string SelectAlgorithm(string input,string& key,char t)
+string SelectAlgorithm(string input,string& key,char type)
 {
-	switch (t)
+	switch (type)
 	{
 		case '0' :
 			key=GETSM3(key);
@@ -105,6 +136,6 @@ string SelectAlgorithm(string input,string& key,char t)
 			key=GETSHA3_256(GETSHA3_512(key));
 			return GETKeccak_512(Kalyna256_CBC_Encrypt(input,key));
 	}
-	LogWarning(EmptyString+"The algorithm "+t+" do not exist, it should be between 0~F");
+	LogWarning(EmptyString+"The algorithm "+type+" do not exist, it should be between 0~F");
 	return input;
 }

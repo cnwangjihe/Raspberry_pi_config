@@ -53,8 +53,32 @@ inline string ChangeBase64Alphabet(string input,string now,string old=Base64Defa
 		LogError("The old length of Base64 Alphabet is not right");
 		return input;
 	}
+
 	for (int i=0;i<64;i++)
-		dictionary[old[i]]=now[i];
+	{
+		if (dictionary.count(now[i]))
+			flag=1;
+		else
+			dictionary[now[i]]=1;
+	}
+	if (flag)
+		LogWarning("The new Base64 Alphabet may be wrong, some letters are duplicate");
+	flag=0;
+	dictionary.clear();
+	for (int i=0;i<64;i++)
+	{
+		if (dictionary.count(old[i]))
+			flag=1;
+		else
+			dictionary[old[i]]=now[i];
+	}
+	if (flag)
+	{
+		LogError("The old Base64 Alphabet is wrong, some letters are duplicate");
+		return input;
+	}
+
+	flag=0;
 	for (unsigned long long i=0;i<input.size();i++)
 	{
 		if (dictionary.count(input[i]))
@@ -64,6 +88,25 @@ inline string ChangeBase64Alphabet(string input,string now,string old=Base64Defa
 				flag=1;
 	}
 	if (flag)
-		LogWarning("The old Base64 Alphabet may be wrong");
+		LogWarning("The old Base64 Alphabet may be wrong, some letters are not included");
+	return input;
+}
+
+string EraseBase64Enter(const string& input)
+{
+	unsigned long long p;
+	string output=input;
+	while ((p=output.find('\n'))!=string::npos)
+		output.erase(p,1);
+	while ((p=output.find('\r'))!=string::npos)
+		output.erase(p,1);
+	return output;
+}
+
+string EraseBase64Equalsign(string input)
+{
+	unsigned long long p=input.size();
+	while (input[--p]=='=')
+		input.erase(p,1);
 	return input;
 }

@@ -285,3 +285,18 @@ string GETSHA3_512(string input)
 	encoder.MessageEnd();
 	return output;
 }
+
+string GETAdler32(string input)
+{
+	CryptoPP::Adler32 hash;
+	byte digest[ CryptoPP::Adler32::DIGESTSIZE ];
+
+	hash.CalculateDigest( digest, (byte*) input.c_str(), input.length() );
+
+	CryptoPP::HexEncoder encoder;
+	string output;
+	encoder.Attach( new CryptoPP::StringSink( output ) );
+	encoder.Put( digest, sizeof(digest) );
+	encoder.MessageEnd();
+	return output;
+}

@@ -25,6 +25,7 @@
 #include <cryptopp/whrlpool.h>
 #include <cryptopp/keccak.h>
 #include <cryptopp/sha3.h>
+#include <cryptopp/adler32.h>
 #include <time.h>
 
 using namespace std;
@@ -36,6 +37,7 @@ const byte Kalyna256_CBC_iv[32] = {0x11,0xBB,0x39,0xB4,0x09,0xA5,0x13,0x23,0xAB,
 								   0x5C,0xD9,0x22,0x33,0x26,0xB2,0x2B,0x80,0x68,0x32,0x13,0xA8,0x37,0xAA,0xBB,0xFF};
 const string EmptyString           = "",
 			 Base64DefaultAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+			 Base64BetterAlphabet  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?",
 			 HexDefaultAlphabet    = "0123456789ABCDEF";
 /*
 system("bash -c \"read -rsp $'Press any key to continue...\n' -n 1 key\"");
