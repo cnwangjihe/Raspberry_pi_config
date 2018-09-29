@@ -8,8 +8,8 @@ string AES_CBC_Encrypt(string input,string k)
 	int length=k.size();
 	if (length!=16 && length!=24 && length!=32)
 	{
-		cerr << SystemTime() << " : " << "The length of the AES key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the AES key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)
@@ -27,8 +27,8 @@ string AES_CBC_Decrypt(string input,string k)
 	int length=k.size();
 	if (length!=16 && length!=24 && length!=32)
 	{
-		cerr << SystemTime() << " : " << "The length of the AES key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the AES key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)
@@ -50,8 +50,8 @@ string Kalyna128_CBC_Encrypt(string input,string k)
 	int length=k.size();
 	if (length!=16 && length!=32)
 	{
-		cerr << SystemTime() << " : " << "The length of the Kalyna128 key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the Kalyna128 key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)
@@ -70,8 +70,8 @@ string Kalyna128_CBC_Decrypt(string input,string k)
 	int length=k.size();
 	if (length!=16 && length!=32)
 	{
-		cerr << SystemTime() << " : " << "The length of the Kalyna128 key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the Kalyna128 key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)
@@ -93,8 +93,8 @@ string Kalyna256_CBC_Encrypt(string input,string k)
 	int length=k.size();
 	if (length!=32 && length!=64)
 	{
-		cerr << SystemTime() << " : " << "The length of the Kalyna256 key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the Kalyna256 key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)
@@ -113,8 +113,8 @@ string Kalyna256_CBC_Decrypt(string input,string k)
 	int length=k.size();
 	if (length!=32 && length!=64)
 	{
-		cerr << SystemTime() << " : " << "The length of the Kalyna256 key is NOT RIGHT\n";
-		return "";
+		LogError("The length of the Kalyna256 key is NOT RIGHT");
+		return input;
 	}
 	byte key[length];
 	for (int i=0;i<length;i++)

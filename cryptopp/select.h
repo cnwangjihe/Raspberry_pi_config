@@ -48,10 +48,11 @@ string GetOperationSequence(string s,int level)
 		case 9 :
 			return GETSHA3_512(GETSHA512(s));              //128
 	}
+	LogWarning(EmptyString+"The security level "+to_string(level)+" do not exist, it should be between 0~9");
 	return "";
 }
 
-string SelectAlgorithm(char t,string input,string& key)
+string SelectAlgorithm(string input,string& key,char t)
 {
 	switch (t)
 	{
@@ -104,5 +105,6 @@ string SelectAlgorithm(char t,string input,string& key)
 			key=GETSHA3_256(GETSHA3_512(key));
 			return GETKeccak_512(Kalyna256_CBC_Encrypt(input,key));
 	}
-	return "";
+	LogWarning(EmptyString+"The algorithm "+t+" do not exist, it should be between 0~F");
+	return input;
 }
