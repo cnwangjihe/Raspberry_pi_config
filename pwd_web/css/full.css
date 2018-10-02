@@ -1,0 +1,237 @@
+.test-enter-active,
+.test-leave-active {
+    -webkit-transition: opacity .5s;
+    transition: opacity .5s
+}
+
+.test-enter,
+.test-leave-active {
+    opacity: 0
+}
+
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
+    -webkit-transition: width .2s, opacity .4s;
+    transition: width .2s, opacity .4s;
+    opacity: 1;
+    background-color: #efc14e;
+    z-index: 999999
+}
+
+.container {
+    min-height: 100vh;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    overflow: hidden
+}
+
+.container,
+.container>.card-wrap {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    text-align: center;
+    -ms-flex-pack: distribute;
+    justify-content: space-around
+}
+
+.container>.card-wrap {
+    height: 60vh;
+    width: 100vw;
+    overflow: visible
+}
+
+.container>.card-wrap,
+.container>.card-wrap .card {
+    position: relative;
+    -webkit-transition: -webkit-transform .5s;
+    transition: -webkit-transform .5s;
+    transition: transform .5s;
+    transition: transform .5s, -webkit-transform .5s
+}
+
+.container>.card-wrap .card {
+    margin: 0 auto;
+    height: 100%;
+    width: 60%;
+    border: 2px solid #3e464c;
+    overflow: hidden;
+    border-radius: 12px
+}
+
+.container>.card-wrap .card .title {
+    position: absolute;
+    width: 100%;
+    top: 20%;
+    font-weight: 100;
+    font-size: 8vh;
+    letter-spacing: 1px
+}
+
+.container>.card-wrap .card .question-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin: 0 auto;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: distribute;
+    justify-content: space-around;
+    position: absolute;
+    width: 100%;
+    height: 20%;
+    top: 60%;
+    text-align: center;
+    font-size: 3vh
+}
+
+.container>.card-wrap .card .question-content .question-input>input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 0;
+    border-bottom: 1px solid #000;
+    outline: none;
+    padding: 8px;
+    font-size: 2.7vh;
+    text-align: center
+}
+
+.button-slot {
+    width: 100%;
+    text-align: center;
+    line-height: 60px;
+    background-color: #3e464c;
+    color: #fff;
+    cursor: pointer
+}
+
+.content-slot .footer-wraper {
+    padding: 0 10vw;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between
+}
+
+.content-slot .footer-wraper .footer-left,
+.content-slot .footer-wraper .footer-right {
+    min-width: 320px
+}
+
+.content-slot .footer-wraper .footer-title {
+    color: #fff;
+    font-size: 22px;
+    margin-bottom: 8px
+}
+
+.content-slot .footer-wraper .footer-content {
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 8px
+}
+
+.content-slot .copyright {
+    color: #f7f8f8;
+    position: absolute;
+    width: 80vw;
+    padding: 10px 10vw;
+    font-size: 10px;
+    bottom: 0;
+    background-color: #33393e
+}
+
+.blurIn {
+    -webkit-animation: 1s forwards;
+    animation: 1s forwards;
+    -webkit-animation-name: blurIn;
+    animation-name: blurIn;
+    filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="5" /></filter></svg>#filter');
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
+    opacity: .5
+}
+
+@-webkit-keyframes blurIn {
+    to {
+        opacity: 1;
+        filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="0" /></filter></svg>#filter');
+        -webkit-filter: blur(0);
+        filter: blur(0)
+    }
+}
+
+@keyframes blurIn {
+    to {
+        opacity: 1;
+        filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feGaussianBlur stdDeviation="0" /></filter></svg>#filter');
+        -webkit-filter: blur(0);
+        filter: blur(0)
+    }
+}
+
+.cardIn {
+    -webkit-animation: 1s forwards;
+    animation: 1s forwards;
+    -webkit-animation-name: cardIn;
+    animation-name: cardIn
+}
+
+@-webkit-keyframes cardIn {
+    0% {
+        -webkit-transform: translate3d(0, 300px, 0) rotate(15deg);
+        transform: translate3d(0, 300px, 0) rotate(15deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: none;
+        transform: none;
+        opacity: 1
+    }
+}
+
+@keyframes cardIn {
+    0% {
+        -webkit-transform: translate3d(0, 300px, 0) rotate(15deg);
+        transform: translate3d(0, 300px, 0) rotate(15deg);
+        opacity: 0
+    }
+
+    to {
+        -webkit-transform: none;
+        transform: none;
+        opacity: 1
+    }
+}
+
+.nazo-footer {
+    position: fixed;
+    width: 100%;
+    will-change: bottom
+}
+
+.nazo-footer>.footer-button {
+    height: 30px
+}
+
+.transition-on {
+    -webkit-transition: bottom .5s;
+    transition: bottom .5s
+}
