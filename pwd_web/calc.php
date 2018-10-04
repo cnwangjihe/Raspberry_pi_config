@@ -35,7 +35,7 @@
 							</div>
 							<div>
 								<label>Security</label>
-								<select class="selectpicker" title="Security level..." id="Security" name="Security">
+								<select class="selectpicker" title="Security level..." id="Security" name="Security" data-container="body">
 									<?php
 									for ($x = 0; $x < 10; $x ++) {
 										echo "<option value=\"$x\">$x</option>";
@@ -45,22 +45,22 @@
 							</div>
 							<div>
 								<label>Length</label>
-								<select class="selectpicker" title="Length..." id="Length" name="Length">
-									<option value="0">8</option>
-									<option value="1">16</option>
-									<option value="2">32</option>
-									<option value="3">40</option>
-									<option value="4">48</option>
-									<option value="5">56</option>
-									<option value="6">64</option>
-									<option value="7">80</option>
-									<option value="8">96</option>
-									<option value="9">128</option>
+								<select class="selectpicker" title="Length..." id="Length" name="Length" data-container="body">
+									<option value="0">8 (6)</option>
+									<option value="1">16 (11)</option>
+									<option value="2">32 (22)</option>
+									<option value="3">40 (27)</option>
+									<option value="4">48 (32)</option>
+									<option value="5">56 (38)</option>
+									<option value="6">64 (43)</option>
+									<option value="7">80 (54)</option>
+									<option value="8">96 (64)</option>
+									<option value="9">128 (86)</option>
 								</select>
 							</div>
 							<div>
 								<label>Type</label>
-								<select class="selectpicker" title="Type..." id="Type" name="Type">
+								<select class="selectpicker" title="Type..." id="Type" name="Type" data-container="body">
 									<option value="0">Hex</option>
 									<option value="1">Base64</option>
 								</select>
@@ -116,6 +116,9 @@
 		}
 		.bootstrap-select>.dropdown-toggle {
 		    line-height: 90%;
+		}
+		option{
+			font-family: Consolas !important;
 		}
 	</style>
 </body>
