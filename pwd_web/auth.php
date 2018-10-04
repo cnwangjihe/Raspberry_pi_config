@@ -2,7 +2,7 @@
 	<div data-server-rendered="true" id="__nuxt">
 		<div class="progress" style="width:0%;height:2px;background-color:#3B8070;opacity:0;"></div>
 		<div>
-			<section class="container">
+			<section class="container" id="mine_container">
 				<div class="card-wrap">
 					<div class="card cardIn">
 						<div class="title">
