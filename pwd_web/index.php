@@ -6,8 +6,8 @@
 	<meta data-n-head="true" name="viewport" content="width=device-width, initial-scale=1, user-scalable=0;" />
 	<meta data-n-head="true" data-hid="description" name="description" content="Nuxt.js project" />
 	<title data-n-head="true">Password Generator</title>
-	<link rel="stylesheet" type="text/css" href="css/full.css">
-	<link rel="stylesheet" type="text/css" href="css/buttons.css">
+	<link rel="stylesheet" type="text/css" href="css/full.min.css">
+	<link rel="stylesheet" type="text/css" href="css/buttons.min.css">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<script
 	src="https://code.jquery.com/jquery-3.3.1.min.js"
