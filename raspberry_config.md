@@ -250,6 +250,9 @@ more information:
 
 ### Part 7 nginx ###
 
+Install:  
+```sudo apt-get install nginx nginx-extras```  
+
 The template for /etc/nginx/conf.d/xxx.conf  
 
 ```
@@ -315,7 +318,24 @@ And if you set the option "auth_basic", remember to change the password
     # better not longer than 8
 ```
 
-### Part 8 squid ###
+### Part 8 php ###
+
+Install php-fpm only.(without mysql)  
+```sudo apt-get install php7.0-fpm```
+
+Configure php.ini *(remember to use Ctrl+w to search)*  
+```Bash
+    sudo nano /etc/php/7.0/fpm/php.ini
+    {
+        session.use_strict_mode = 1
+        session.cookie_secure = 1
+        ; use https to transport cookies
+        session.cookie_lifetime = 900
+        ; 15 minutes
+    }
+```  
+
+### Part 9 squid ###
 
 squid is a powerful proxy.  
 
@@ -332,7 +352,7 @@ Add these to the front of squid.conf
     acl localnet src 192.168.1.0/24
 ```
 
-### Part 9 samba ###
+### Part 10 samba ###
 
 ```Bash
     sudo apt-get install samba samba-common-bin
@@ -353,11 +373,18 @@ Add these to the front of squid.conf
     sudo systemctl restart smbd
 ```
 
-### Part 10 DDNS ###
+### Part 11 DDNS ###
 
-The project of NewFuture, [DDNS](https://github.com/NewFuture/DDNS) Support Cloudflare, Dnspod, Dns.com ...
+The project of NewFuture, [DDNS](https://github.com/NewFuture/DDNS) Support Cloudflare, Dnspod, Dns.com ...  
+Use cron to run automatically:  
+```Bash
+    crontab -e
+    {
+        */5 * * * * /usr/bin/python "/home/pi/DDNS/run.py" -c "/home/pi/DDNS/cloudflare.json" >> "/home/pi/DDNS/cloudflare.log"
+    }
+```
 
-### Part 11 Setup ups ###
+### Part 12 Setup ups ###
 
 If you have an ups of APC, you can install apcupsd to receive a power down signal.  
 
