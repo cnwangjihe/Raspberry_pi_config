@@ -14,13 +14,6 @@ string s,k,opt;
 
 int main(int argc,char* argv[])
 {
-	/*
-	string s,key;
-	cin >> s >> key;
-	string tmp=Kalyna256_CBC_Encrypt(s,key);
-	cout << tmp << "|\n";
-	cout << Kalyna256_CBC_Decrypt(tmp,key) << endl;
-	*/
 	if (argc==1)
 		cin >> s >> k >> level >> len >> type;
 	else
@@ -53,30 +46,9 @@ int main(int argc,char* argv[])
 	if (type)
 		s=ChangeBase64Alphabet(EraseBase64Equalsign(Hex2Base64(s)),Base64BetterAlphabet);
 	cout << s << endl;
-/*	for (int i=0;i<10;i++)
-	{
-		s=CorrectLength(s,i);
-		if (type)
-			s=ChangeBase64Alphabet(EraseBase64Equalsign(Hex2Base64(s)),Base64BetterAlphabet);
-		cout << s << endl;
-	}
-	
-	cout << EncodeBase64(DecodeHex(s)) << endl;
-	cout << ChangeBase64Alphabet(EncodeBase64(DecodeHex(s)),"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?") << endl;
-//	cout << s << endl;
-	
-	string s,k,tmp;
-	cin >> s >> k;
-	for (char i='0';i<='F';i++)
-	{
-		s = SelectAlgorithm(s,k,i);
-		cout << i << " : \n";
-		cout << "  " << StringEraseEnter(Hex2Base64(s)) << endl;
-		cout << "  " << s << endl;
-	}
-	return 0;
-	*/
 }
+
+// g++ -std=c++11 main.cpp -o main -Wall -Wextra -Wparentheses -O2 -DNDEBUG -I/usr/include/cryptopp -lcryptopp -lpthread
 
 /*
 
