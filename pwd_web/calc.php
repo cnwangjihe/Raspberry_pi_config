@@ -8,6 +8,7 @@
 	  	  Security:$("#Security").val(),
 	  	  Length:$("#Length").val(),
 	  	  Type:$("#Type").val(),
+	  	  CSRF:$("#csrf_token_name").val(),
 	  	},
 	  	function(data,status){
 	  		$("#Result").text(data);
@@ -66,6 +67,7 @@
 								</select>
 							</div>
 							<br/>
+							<input type='hidden' id='csrf_token_name' value="<?php echo $_SESSION['csrf_token_name'];?>">
 							<div>
 								<button id="submit" class="button-mine btn-mine btn-secondary">Calc</button>
 							</div>

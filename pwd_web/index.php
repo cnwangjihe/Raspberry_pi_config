@@ -38,6 +38,9 @@
 require "settings.php";
 session_start();
 
+$csrf_token = md5(uniqid(rand(), TRUE));
+$_SESSION['csrf_token_name'] = $csrf_token;
+
 if (!isset($_SESSION['level']))
 	$_SESSION['level']=0;
 
