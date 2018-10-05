@@ -17,6 +17,17 @@ Necessary Steps
     sudo nano /etc/ssh/ssh_config #set "GSSAPIAuthentication no"
     sudo nano /etc/ssh/sshd_config #set "UseDNS no && Port 2101"
     # then reboot
+    # use publickey
+    ssh-keygen -t rsa -P ***** -f raspberry -C 'for Raspberry Pi'
+    cat raspberry.pub >> ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    sudo nano /etc/ssh/sshd_config
+    # RSAAuthentication yes
+    # PubkeyAuthentication yes
+    # AuthorizedKeysFile  .ssh/authorized_keys
+    # PasswordAuthentication no
+    # Then you should use the key "raspberry" to login, instead of password
+
 ```
 
 ### Step 3 set static IP ###
@@ -171,7 +182,7 @@ And the settings.json is at ```/etc/transmission-daemon```
 use [let's encrypt](https://letsencrypt.org/)
 
 #### The first way:  ####
-Use acme.sh to set up  
+Use acme.sh to set up *(take nginx for example)*  
 
 ```Bash
     curl https://get.acme.sh | sh
@@ -223,31 +234,80 @@ Or
     sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
 ```  
 
+Deploying Diffie-Hellman for TLS  
 
-#### Template of /etc/nginx/conf.d/xxx.conf  ####
+```Bash
+    cd /etc/nginx/ssl
+    openssl dhparam -out dhparams.pem 2048
+    # Then configure nginx
+```  
+
+more information:  
+[Let's encrypt with DNS in TXT](https://blog.csdn.net/u012291393/article/details/78768547)  
+[Transmission web interface with SSL](https://moeclub.org/2017/07/11/318)  
+[SSLlabs](https://www.ssllabs.com/)  
+[Deploying Diffie-Hellman for TLS](https://weakdh.org/sysadmin.html)  
+
+### Part 7 nginx ###
+
+The template for /etc/nginx/conf.d/xxx.conf  
 
 ```
 server
 {
+        # Use ssl only
         listen 443;
-        listen 80;
         ssl on;
         server_name wangjihe.tk;
         ssl_certificate /etc/nginx/ssl/wangjihe.tk/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/wangjihe.tk/privkey.pem;
-        ssl_trusted_certificate /etc/letsencrypt/live/wangjihe.tk/chain.pem;
+        ssl_certificate_key /etc/nginx/ssl/wangjihe.tk/privkey.pem;
+        ssl_trusted_certificate /etc/nginx/ssl/wangjihe.tk/ca.pem;
+        
+        # Set HSTS
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+        # Deploying Diffie-Hellman
+        ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
+        ssl_prefer_server_ciphers on;
+        ssl_dhparam /etc/nginx/ssl/dhparams.pem;
+
+        # Hide server information
+        server_tokens off;
+        more_clear_headers Server;
+
+        # Prevent others using these web pages in iframe
+        add_header X-Frame-Options SAMEORIGIN; # or you can use DENY
+        
+        # For proxy (optional)
         location ~* /
         {
                 auth_basic "\n";
                 auth_basic_user_file /etc/nginx/password; 
+                # auth may not necessary (optional)
                 proxy_pass http://127.0.0.1:10101; 
         }
         error_page 497  https://$host$uri?$args;
+        
+        # For php server (optional)
+        root /var/www/wangjihe;
+        index index.php;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
 
+                # With php7.0-cgi alone:
+                # fastcgi_pass 127.0.0.1:9000;
+                # With php7.0-fpm:
+                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
 }
 ```  
 
-And remenber to change the password  
+And if you set the option "auth_basic", remember to change the password  
 
 ```Bash
     echo -n 'USERNAME:' >>/etc/nginx/password
@@ -255,11 +315,7 @@ And remenber to change the password
     # better not longer than 8
 ```
 
-more information:  
-[Let's encrypt with DNS in TXT](https://blog.csdn.net/u012291393/article/details/78768547)  
-[Transmission web interface with SSL](https://moeclub.org/2017/07/11/318)  
-
-### Part 7 squid ###
+### Part 8 squid ###
 
 squid is a powerful proxy.  
 
@@ -276,7 +332,7 @@ Add these to the front of squid.conf
     acl localnet src 192.168.1.0/24
 ```
 
-### Part 8 samba ###
+### Part 9 samba ###
 
 ```Bash
     sudo apt-get install samba samba-common-bin
@@ -297,11 +353,11 @@ Add these to the front of squid.conf
     sudo systemctl restart smbd
 ```
 
-### Part 9 DDNS ###
+### Part 10 DDNS ###
 
 The project of NewFuture, [DDNS](https://github.com/NewFuture/DDNS) Support Cloudflare, Dnspod, Dns.com ...
 
-### Part 10 Setup ups ###
+### Part 11 Setup ups ###
 
 If you have an ups of APC, you can install apcupsd to receive a power down signal.  
 
