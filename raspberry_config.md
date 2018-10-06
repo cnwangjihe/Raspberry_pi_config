@@ -415,6 +415,23 @@ Then:
     sudo systemctl start apcupsd
 ```
 
+### Part 13 install crypto++ ###
+
+Use source code to install.  
+
+```Bash
+    cd /tmp
+    mkdir cryptopp7 && cd cryptopp7
+    wget https://www.cryptopp.com/cryptopp700.zip
+    unzip cryptopp700.zip
+    export CXXFLAGS="-DNDEBUG -g2 -O3 -std=c++11"
+    make && make test
+    sudo make install
+    cd ..
+    rm -rf cryptopp7
+    # g++ -std=c++11 file_name.cpp -o file_base_name -Wall -Wextra -Wparentheses -O2 -DNDEBUG -I/usr/include/cryptopp -lcryptopp -lpthread
+```
+
 More information:  
 [http://www.apcupsd.com/manual/manual.html](http://www.apcupsd.com/manual/manual.html)  
 [https://wiki.archlinux.org/index.php/APC_UPS](https://wiki.archlinux.org/index.php/APC_UPS)  
