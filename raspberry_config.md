@@ -415,6 +415,12 @@ Then:
     sudo systemctl start apcupsd
 ```
 
+More information:  
+[http://www.apcupsd.com/manual/manual.html](http://www.apcupsd.com/manual/manual.html)  
+[https://wiki.archlinux.org/index.php/APC_UPS](https://wiki.archlinux.org/index.php/APC_UPS)  
+*You can find the way to change the script that apcupsd will execute*  
+[https://wiki.debian.org/apcupsd](https://wiki.debian.org/apcupsd)  
+
 ### Part 13 install crypto++ ###
 
 Use source code to install.  
@@ -429,14 +435,10 @@ Use source code to install.
     sudo make install
     cd ..
     rm -rf cryptopp7
-    # g++ -std=c++11 file_name.cpp -o file_base_name -Wall -Wextra -Wparentheses -O2 -DNDEBUG -I/usr/include/cryptopp -lcryptopp -lpthread
-```
-
-More information:  
-[http://www.apcupsd.com/manual/manual.html](http://www.apcupsd.com/manual/manual.html)  
-[https://wiki.archlinux.org/index.php/APC_UPS](https://wiki.archlinux.org/index.php/APC_UPS)  
-*You can find the way to change the script that apcupsd will execute*  
-[https://wiki.debian.org/apcupsd](https://wiki.debian.org/apcupsd)  
+    # g++ -std=c++11 file_name.cpp -o file_name -Wall -Wextra -Wparentheses -O2 -DNDEBUG -I/usr/include/cryptopp -lcryptopp -lpthread
+```  
+[Install](https://github.com/weidai11/cryptopp/blob/master/Install.txt)  
+[Usage](https://www.cryptopp.com/docs/ref/)  
 
 Create Services.
 ------
