@@ -8,7 +8,7 @@
 	  	  Security:$("#Security").val(),
 	  	  Length:$("#Length").val(),
 	  	  Type:$("#Type").val(),
-	  	  CSRF:$("#csrf_token_name").val(),
+	  	  token_calc:$("#token_calc").val(),
 	  	},
 	  	function(data,status){
 	  		$("#Result").text(data);
@@ -16,6 +16,9 @@
 	  	});
 	  });
 	});
+	$(document).ready(setTimeout(function(){
+		$("#Text").focus();
+	},1000));
 </script>
 <body data-n-head="">
 	<div data-server-rendered="true" id="__nuxt">
@@ -67,7 +70,7 @@
 								</select>
 							</div>
 							<br/>
-							<input type='hidden' id='csrf_token_name' value="<?php echo $_SESSION['csrf_token_name'];?>">
+							<input type='hidden' id='token_calc' value="<?php echo $_SESSION['token_calc'];?>">
 							<div>
 								<button id="submit" class="button-mine btn-mine btn-secondary">Calc</button>
 							</div>

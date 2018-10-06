@@ -38,15 +38,21 @@
 require "settings.php";
 session_start();
 
-$csrf_token = md5(uniqid(rand(), TRUE));
-$_SESSION['csrf_token_name'] = $csrf_token;
+if (empty($_SESSION['token_auth']))
+    $_SESSION['token_auth'] = bin2hex(random_bytes(32));
+
+if (empty($_SESSION['token_calc']))
+    $_SESSION['token_calc'] = bin2hex(random_bytes(32));
 
 if (!isset($_SESSION['level']))
 	$_SESSION['level']=0;
 
 $answer = isset($_POST['answer'])? htmlspecialchars($_POST['answer']) : '';
-if ($_SESSION['level'] != $problem_count && $answer == $correct_answers[$_SESSION['level']])
+if ($_SESSION['level'] != $problem_count &&
+	$answer == $correct_answers[$_SESSION['level']] &&
+	hash_equals($_POST['token_auth'],$_SESSION['token_auth']))
 	$_SESSION['level']++;
+
 $i = $_SESSION['level'];
 if ($i < $problem_count)
 	include "auth.php";

@@ -1,3 +1,8 @@
+<script type="text/javascript">
+	$(document).ready(setTimeout(function(){
+		$("#answer").focus();
+	},1000));
+</script>
 <body data-n-head="">
 	<div data-server-rendered="true" id="__nuxt">
 		<div class="progress" style="width:0%;height:2px;background-color:#3B8070;opacity:0;"></div>
@@ -14,11 +19,12 @@
 							</div>
 							<form method="post" action="">
 								<div class="question-input">
-									<input name="answer" value="" class="input">
+									<input id="answer" name="answer" value="" class="input">
 								</div>
 								<br/>
+								<input type='hidden' name='token_auth' value="<?php echo $_SESSION['token_auth'];?>">
 								<div>
-									<input type="submit" value="Go" class="btn-mine btn-secondary button-mine">
+									<input type="submit" value="Submit" class="btn-mine btn-secondary button-mine">
 								</div>
 							</form>
 						</div>

@@ -4,7 +4,7 @@
 	if ($_SESSION["level"] != $problem_count)
 		die("You have not finish the problem yet");
 
-	if ($_POST["CSRF"]!=$_SESSION["csrf_token_name"])
+	if (hash_equals($_POST["token_calc"] , $_SESSION["token_calc"])===false)
 		die("Cross-site Request Forgery Detected");
 
 	$arg[0]=$_POST["Text"];
@@ -15,8 +15,7 @@
 	$cmd="/usr/bin/passwdg ";
 	for ($i = 0; $i < 5; $i ++)
 	{
-		if (strpos($arg[$i], "'") !== false)
-			die("Texts {$i} include ', but it is not allowed");
+		$arg[$i]=str_replace("'","'\"'\"'",$arg[$i]);
 		$arg[$i]="'".$arg[$i]."'";
 		$cmd=$cmd." ".$arg[$i];
 	}
