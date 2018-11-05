@@ -281,18 +281,25 @@ server
         # Prevent others using these web pages in iframe
         add_header X-Frame-Options SAMEORIGIN; # or you can use DENY
         
-        # For proxy (optional)
+        root /var/www/wangjihe;
+
         location ~* /
         {
-                auth_basic "\n";
-                auth_basic_user_file /etc/nginx/password; 
                 # auth may not necessary (optional)
-                proxy_pass http://127.0.0.1:10101; 
+                auth_basic "\n";
+                auth_basic_user_file /etc/nginx/password;
+
+                # For proxy (optional)
+                proxy_pass http://127.0.0.1:10101;
+                
+                # For file server, please change the root
+                autoindex on;
+                autoindex_exact_size off;
+                autoindex_localtime on;
         }
         error_page 497  https://$host$uri?$args;
         
         # For php server (optional)
-        root /var/www/wangjihe;
         index index.php;
         location / {
                 # First attempt to serve request as file, then
