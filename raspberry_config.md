@@ -481,7 +481,9 @@ An [example](./WinSW.xml) for frpc.
 *Notice: if you see the error"WMI Operation failure: AccessDenied",Please check if you have used cipher to encrypt your files.*
 
 Others
-------
+------  
+### Compression ###
+
 ```Bash
     cat /sys/class/thermal/thermal_zone0/temp # check the temperature of CPU
     tar -zxvf *.tar.gz # unzip
@@ -493,3 +495,8 @@ Others
     tar -cjvf /tmp/etc.tar.bz2 /etc # compress with bzip2
     # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
 ```
+  
+### Network "top" ###
+
+Both ```iftop``` and ```nethogs``` are useful.  
+You can simply use ```apt-get``` to install them.  
