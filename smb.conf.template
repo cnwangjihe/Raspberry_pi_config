@@ -1,0 +1,10 @@
+[HDD0]
+    comment=HDD0
+    path=/mnt/HDD0
+    browseable=yes
+    writable=yes
+    available=yes
+    admin users=pi
+    valid users=pi
+    write list=pi
+    public=no

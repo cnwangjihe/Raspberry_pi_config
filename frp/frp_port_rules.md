@@ -1,7 +1,7 @@
 frp port name rules
 ## first number ##
 2:ssh or telnet
-3:everything or ftp
+3:everything or ftp or website(temp)
 4:remote desktop
 5:frps_tcp_udp
 6:BT
@@ -18,4 +18,5 @@ frp port name rules
 421:wgs_252 (teacher)
 422:wgs_253
 423:wgs_230
+134:10.3.35.134
 500-599:temp

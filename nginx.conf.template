@@ -1,0 +1,67 @@
+server
+{
+         # Use ssl only
+        listen 443 ssl http2;
+        ssl on;
+        server_name files.wangjihe.cf;
+        ssl_certificate /etc/nginx/ssl/*.wangjihe.cf/fullchain.pem;
+        ssl_certificate_key /etc/nginx/ssl/*.wangjihe.cf/privkey.pem;
+        ssl_trusted_certificate /etc/nginx/ssl/*.wangjihe.cf/ca.pem;
+        ssl_session_cache shared:SSL:20m;
+        ssl_session_timeout 60m;
+        ssl_stapling on;
+        ssl_stapling_verify on;
+
+        # Deploying Diffie-Hellman
+        ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
+        ssl_prefer_server_ciphers on;
+        ssl_dhparam /etc/nginx/ssl/dhparams.pem;
+
+        # Hide server information
+        server_tokens off;
+        more_clear_headers Server;
+
+        # Prevent others using these web pages in iframe
+        add_header X-Frame-Options SAMEORIGIN; # or you can use DENY
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Content-Type-Options "nosniff";
+
+        # Set HSTS
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+        charset utf-8;
+
+        root /var/www/wangjihe;
+
+        location ~* /
+        {
+                # auth may not necessary (optional)
+                auth_basic "\n";
+                auth_basic_user_file /etc/nginx/password;
+
+                # For proxy (optional)
+                proxy_pass http://127.0.0.1:10101;
+                
+                # For file server, please change the root
+                autoindex on;
+                autoindex_exact_size off;
+                autoindex_localtime on;
+        }
+        error_page 497  https://$host$uri?$args;
+        
+        # For php server (optional)
+        index index.php;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+
+                # With php7.0-cgi alone:
+                # fastcgi_pass 127.0.0.1:9000;
+                # With php7.0-fpm:
+                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
+}

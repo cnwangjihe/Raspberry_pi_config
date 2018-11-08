@@ -127,28 +127,8 @@ It is difficult to succeed.
     cd transmission-2.94
     ./configure --prefix=/usr && make
     sudo make install
-    sudo nano /etc/systemd/system/transmission-daemon.service
-    {
-        [Unit]
-        Description=Transmission BitTorrent Daemon
-        After=network.target
-
-        [Service]
-        User=debian-transmission
-        Type=simple
-        ExecStart=/usr/bin/transmission-daemon -f --log-error
-        ExecStop=/bin/kill -s STOP $MAINPID
-        ExecReload=/bin/kill -s HUP $MAINPID
-        Restart=always
-        RestartSec=10
-
-        [Install]
-        WantedBy=multi-user.target
-    }
-    sudo systemctl daemon-reload
-    sudo systemctl enable transmission-daemon.service
-    sudo systemctl start transmission-daemon.service
-```
+```  
+Then use [init.d](#init.d) or [systemd](#systemd) to configure transmission service.  
 By the way, the .config folder is at ```/var/lib/transmission-daemon```, or you can use ```sudo cat /etc/passwd``` to check the main folder of user debian-transmission(or transmission).  
 And the settings.json is at ```/etc/transmission-daemon```
 
@@ -253,69 +233,7 @@ more information:
 Install:  
 ```sudo apt-get install nginx nginx-extras```  
 
-The template for /etc/nginx/conf.d/xxx.conf  
-
-```
-server
-{
-        # Use ssl only
-        listen 443;
-        ssl on;
-        server_name wangjihe.tk;
-        ssl_certificate /etc/nginx/ssl/wangjihe.tk/fullchain.pem;
-        ssl_certificate_key /etc/nginx/ssl/wangjihe.tk/privkey.pem;
-        ssl_trusted_certificate /etc/nginx/ssl/wangjihe.tk/ca.pem;
-        
-        # Set HSTS
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-
-        # Deploying Diffie-Hellman
-        ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
-        ssl_prefer_server_ciphers on;
-        ssl_dhparam /etc/nginx/ssl/dhparams.pem;
-
-        # Hide server information
-        server_tokens off;
-        more_clear_headers Server;
-
-        # Prevent others using these web pages in iframe
-        add_header X-Frame-Options SAMEORIGIN; # or you can use DENY
-        
-        root /var/www/wangjihe;
-
-        location ~* /
-        {
-                # auth may not necessary (optional)
-                auth_basic "\n";
-                auth_basic_user_file /etc/nginx/password;
-
-                # For proxy (optional)
-                proxy_pass http://127.0.0.1:10101;
-                
-                # For file server, please change the root
-                autoindex on;
-                autoindex_exact_size off;
-                autoindex_localtime on;
-        }
-        error_page 497  https://$host$uri?$args;
-        
-        # For php server (optional)
-        index index.php;
-        location / {
-                # First attempt to serve request as file, then
-                # as directory, then fall back to displaying a 404.
-                try_files $uri $uri/ =404;
-        }
-        location ~ \.php$ {
-                include snippets/fastcgi-php.conf;
-
-                # With php7.0-cgi alone:
-                # fastcgi_pass 127.0.0.1:9000;
-                # With php7.0-fpm:
-                fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-        }
-}
-```  
+The [template](./nginx.conf.template) for /etc/nginx/conf.d/xxx.conf  
 
 And if you set the option "auth_basic", remember to change the password  
 
@@ -361,24 +279,15 @@ Add these to the front of squid.conf
 
 ### Part 10 samba ###
 
+If you install samba, NetBIOS will be enabled automatic.   
 ```Bash
     sudo apt-get install samba samba-common-bin
     sudo pdbedit –a pi
     sudo nano /etc/samba/smb.conf
-    {
-        [HDD0]
-            comment=HDD0
-            path=/mnt/HDD0
-            browseable=yes
-            writable=yes
-            available=yes
-            admin users=pi
-            valid users=pi
-            write list=pi
-            public=no
-    }
     sudo systemctl restart smbd
 ```
+Template of [smb.conf](./smb.conf.template).  
+
 
 ### Part 11 DDNS ###
 
@@ -454,7 +363,7 @@ Create Services.
 
 Use init.d to manage service.  
 You need to change the value of `dir`,`cmd`and`user`.  
-To see the template please click [here](./template_for_initd)  
+To see the template please click [here](./initd.template)  
 ```Bash
     sudo cp template_for_initd /etc/init.d/YOUR_SERVICE
     sudo chmod 775 /etc/init.d/YOUR_SERVICE
@@ -465,7 +374,7 @@ To see the template please click [here](./template_for_initd)
 Use systemd to manage service.
 You need to change the value of `Description`,`User`,`Group`(*the same as User*),`WorkingDirectory`,`ExecStart`and`ExecStop`.
 *Notice:The space in WorkingDirectory should be replaced by \x20*
-To see the template please click [here](./template_for_systemd)  
+To see the template please click [here](./systemd.service.template)  
 ```Bash
     sudo cp template_for_systemd /etc/systemd/system/YOUR_SERVICE.service
     sudo systemctl daemon-reload
@@ -477,7 +386,7 @@ To see the template please click [here](./template_for_systemd)
 Use WinSW to install service on Windows.  
 Please install .Net 4.  
 [Here](https://github.com/kohsuke/winsw) has detailed information.  
-An [example](./WinSW.xml) for frpc.  
+An [example](./WinSW.xml.template) for frpc.  
 *Notice: if you see the error"WMI Operation failure: AccessDenied",Please check if you have used cipher to encrypt your files.*
 
 Others
