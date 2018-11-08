@@ -128,7 +128,7 @@ It is difficult to succeed.
     ./configure --prefix=/usr && make
     sudo make install
 ```  
-Then use [init.d](#init.d) or [systemd](#systemd) to configure transmission service.  
+Then use [init.d](#initd) or [systemd](#systemd) to configure transmission service.  
 By the way, the .config folder is at ```/var/lib/transmission-daemon```, or you can use ```sudo cat /etc/passwd``` to check the main folder of user debian-transmission(or transmission).  
 And the settings.json is at ```/etc/transmission-daemon```
 
