@@ -409,3 +409,21 @@ Others
 
 Both ```iftop``` and ```nethogs``` are useful.  
 You can simply use ```apt-get``` to install them.  
+
+### mount automatically at boot ###  
+
+First, you need to find out the UUID of your hard disk.
+```Bash
+    ls -l /dev/disk/by-uuid
+``` 
+Then modify ```/etc/fstab```, an example:  
+```Bash
+    UUID=240EB1E10EB1ABE4 /mnt/HDD1 ntfs-3g defaults,exec,umask=0000 0 0
+```  
+To know more information, please look at [here](https://wiki.archlinux.org/index.php/Fstab).
+
+**Warning:  
+    If you enter an wrong UUID(not exist or not connected), system boot will fail!  
+    Just like this:  
+    > You are in emergency mode. After logging in, type...  
+    > Cannot open access to console, the root account is locked.**
