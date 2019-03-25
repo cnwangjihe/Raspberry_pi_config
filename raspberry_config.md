@@ -173,7 +173,7 @@ Use acme.sh to set up *(take nginx for example)*
     export DP_Id="XXXXXX"
     export DP_Key="XXXXXXXXXXXXX"
     # use the api of DNSpod
-    DOMAIN=wangjihe.tk
+    DOMAIN="wangjihe.tk"
     mkdir /etc/nginx/ssl/$DOMAIN
     acme.sh --issue --dns dns_dp -d $DOMAIN
     # if you use cloudflare
@@ -402,6 +402,13 @@ Others
     tar -cvf /tmp/etc.tar /etc # Only bale, not compress
     tar -czvf /tmp/etc.tar.gz /etc # compress with gzip
     tar -cjvf /tmp/etc.tar.bz2 /etc # compress with bzip2
+    # set proxy
+    export http_proxy=socks5://127.0.0.1:1926
+    export https_proxy=socks5://127.0.0.1:1926
+    # list and kill tty
+    w # list tty sessions
+    pkill -HUP -t pts/0
+    pkill -9 -t pts/0
     # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
 ```
   
