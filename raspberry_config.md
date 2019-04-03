@@ -409,6 +409,7 @@ Others
     w # list tty sessions
     pkill -HUP -t pts/0
     pkill -9 -t pts/0
+    du -h -d1 [folder] # calculate folder size
     # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
 ```
   
