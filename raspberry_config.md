@@ -132,18 +132,37 @@ Then use [init.d](#initd) or [systemd](#systemd) to configure transmission servi
 By the way, the .config folder is at ```/var/lib/transmission-daemon```, or you can use ```sudo cat /etc/passwd``` to check the main folder of user debian-transmission(or transmission).  
 And the settings.json is at ```/etc/transmission-daemon```
 
-### Part 4 install frp-server on linux ###
+### Part 4 frp ###
 
+Compile from source code.  
+First of all, you need to [install Go](#part-14-install-go).  
+If Windows xp support in needed, please use Go1.10.  
 ```Bash
-    wget https://github.com/fatedier/frp/releases/download/v0.21.0/frp_0.21.0_linux_arm.tar.gz
-    tar -zxvf frp_0.21.0_linux_arm.tar.gz
-    cd frp_0.21.0_linux_arm
+    GOROOT=/usr/local/go
+    GOPATH=/home/frp
+    PATH=$GOROOT/bin:$PATH:$HOME/bin
+    export GOROOT
+    export GOPATH
+    export PATH
+    git clone https://github.com/fatedier/frp.git $GOPATH/src/github.com/fatedier/frp
+    cd /home/frp/src/github.com/fatedier/frp/
+    go get github.com/docopt/docopt-go
+    go get github.com/fatedier/frp/models/config
+    go get github.com/vaughan0/go-ini
+    make
+```
+
+Install from binary release.
+```Bash
+    wget https://github.com/fatedier/frp/releases/download/v0.25.3/frp_0.25.3_linux_arm.tar.gz
+    tar -zxvf frp_0.25.3_linux_arm.tar.gz
+    cd frp_0.25.3_linux_arm
     sudo cp ./frps /usr/bin
     sudo mkdir /etc/frps
-    sudo cp ./frps.ini /etc/frps
+    # sudo cp ./frps.ini /etc/frps
     cd ..
-    rm -rf frp_0.21.0_linux_arm
-    rm frp_0.21.0_linux_arm.tar.gz
+    rm -rf frp_0.25.3_linux_arm
+    rm frp_0.25.3_linux_arm.tar.gz
     cd /etc/frps
     # then install service
 ```
@@ -339,7 +358,7 @@ More information:
 
 ### Part 13 install crypto++ ###
 
-Use source code to install.  
+Install from source code.  
 
 ```Bash
     cd /tmp
@@ -355,6 +374,16 @@ Use source code to install.
 ```  
 [Install](https://github.com/weidai11/cryptopp/blob/master/Install.txt)  
 [Usage](https://www.cryptopp.com/docs/ref/)  
+
+### Part 14 install go ###
+
+Install from binary release. (can choose any version)  
+```Bash
+    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz # https://dl.google.com/go/go1.10.8.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
+    sudo -- sh -c -e 'sudo echo "export PATH=$PATH:/usr/local/go/bin">>/etc/profile'
+```  
+[Go main page](https://golang.org/)
 
 Create Services.
 ------
