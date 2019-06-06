@@ -1,34 +1,11 @@
 [common]
-server_addr = [IP]
-server_port = 5101
-token = 4333377777777777
+server_addr = {ip/domain}
+server_port = {port}
+token = {token}
 
-[4100_udp]
-type = udp
-local_ip = 127.0.0.1
-local_port = 3389
-remote_port = 4100
-
-[4100_tcp]
+[ServerName_mstsc]
 type = tcp
 local_ip = 127.0.0.1
 local_port = 3389
-remote_port = 4100
-
-[6100_tcp]
-type = tcp
-local_ip = 127.0.0.1
-local_port = 6100
-remote_port = 6100
-
-[6100_udp]
-type = udp
-local_ip = 127.0.0.1
-local_port = 6100
-remote_port = 6100
-
-[9100_tcp]
-type = tcp
-local_ip = 127.0.0.1
-local_port = 9100
-remote_port = 9100
+remote_port = 4210
+tls_enable = true
