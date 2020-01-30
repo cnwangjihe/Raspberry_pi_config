@@ -16,17 +16,25 @@ passwd # user:pi,oldpsw:raspberry
 ```Bash
 sudo nano /etc/ssh/ssh_config #set "GSSAPIAuthentication no"
 sudo nano /etc/ssh/sshd_config #set "UseDNS no && Port 2101"
-# then reboot
-# use publickey
-ssh-keygen -t rsa -P ***** -f raspberry -C 'for Raspberry Pi'
+# generate & use publickey
+ssh-keygen -t ed25519 -f raspberry -C 'for Raspberry Pi'
 cat raspberry.pub >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 sudo nano /etc/ssh/sshd_config
-# RSAAuthentication yes
 # PubkeyAuthentication yes
 # AuthorizedKeysFile  .ssh/authorized_keys
 # PasswordAuthentication no
 # Then you should use the key "raspberry" to login, instead of password
+
+# config google authenticator
+sudo apt install libpam-google-authenticator
+nano /etc/pam.d/sshd
+# Add "auth required pam_google_authenticator.so" in a new line
+nano /etc/ssh/sshd_config
+# Change "# ChallengeResponseAuthentication no" to "ChallengeResponseAuthentication yes"
+
+# All change would be applied after restarting sshd
+sudo systemctl restart sshd
 
 ```
 
@@ -48,13 +56,14 @@ sudo -- sh -c -e "sudo echo '192.30.253.112 http://github.com'>>/etc/hosts"
 sudo -- sh -c -e "sudo echo 'deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib'>/etc/apt/sources.list"
 sudo -- sh -c -e "sudo echo 'deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib'>>/etc/apt/sources.list"
 sudo -- sh -c -e "sudo rm /etc/apt/sources.list.d/raspi.list"
-sudo apt-get update && sudo apt-get upgrade 
+sudo apt update && sudo apt upgrade 
 ```
 
 ### Step 5 install necessary packages ###
 ```Bash
-sudo apt-get install vim gdbserver g++ systemd git ufw
+sudo apt install vim g++ git ufw make cmake curl
 ```
+
 ### Step 6 Security ###
 ```Bash
 sudo ufw allow 2101
@@ -77,7 +86,6 @@ exit
 # sudo mount -t ntfs-3g /dev/sdb1 /mnt/usb
 ```
 
-
 ### Step 8 Set timezone ###
 ```Bash
 tzselect
@@ -92,7 +100,7 @@ Helpful Parts
 
 *Not useful any more*  
 ```Bash
-# sudo apt-get remove openssl
+# sudo apt remove openssl
 wget https://ftp.openssl.org/source/old/1.0.0/openssl-1.0.0.tar.gz
 tar -zxvf openssl-1.0.0.tar.gz
 cd openssl-1.0.0
@@ -112,7 +120,7 @@ Raspbian's apt- will install version 2.92,but it has a serious vulnerability.
 So, after you install it with apt, you should follow [Part 3](#part-3-install-transmission-with-sources-code)
 
 ```Bash
-sudo apt-get install transmission-daemon
+sudo apt install transmission-daemon
 ```
 
 ### Part 3 install transmission with sources code ###
@@ -121,7 +129,7 @@ Don't use this kind of way(unless you use raspbian)
 It is difficult to succeed.  
 
 ```Bash
-sudo apt-get install build-essential automake autoconf libtool pkg-config intltool libcurl4-openssl-dev libglib2.0-dev libevent-dev libminiupnpc-dev libgtk-3-dev libappindicator3-dev ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall
+sudo apt install build-essential automake autoconf libtool pkg-config intltool libcurl4-openssl-dev libglib2.0-dev libevent-dev libminiupnpc-dev libgtk-3-dev libappindicator3-dev ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall
 wget https://raw.githubusercontent.com/transmission/transmission-releases/master/transmission-2.94.tar.xz # Don't use the wrong url
 tar -xf transmission-2.94.tar.xz
 cd transmission-2.94
@@ -230,7 +238,7 @@ cp /etc/letsencrypt/live/$DOMAIN/chain.pem /etc/nginx/$DOMAIN/chain.pem
 ```
 Or  
 ```Bash
-sudo apt-get install python-certbot-nginx
+sudo apt install python-certbot-nginx
 sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
 ```  
 
@@ -251,7 +259,7 @@ more information:
 ### Part 7 nginx ###
 
 Install:  
-```sudo apt-get install nginx nginx-extras```  
+```sudo apt install nginx nginx-extras```  
 
 The [template](./nginx.conf.template) for /etc/nginx/conf.d/xxx.conf  
 
@@ -266,7 +274,7 @@ openssl passwd PASSWORD >>/etc/nginx/password
 ### Part 8 php ###
 
 Install php-fpm only.(without mysql)  
-```sudo apt-get install php7.0-fpm```
+```sudo apt install php7.0-fpm```
 
 Configure php.ini *(remember to use Ctrl+w to search)*  
 ```Bash
@@ -285,7 +293,7 @@ sudo nano /etc/php/7.0/fpm/php.ini
 squid is a powerful proxy.  
 
 ```Bash
-sudo apt-get install squid
+sudo apt install squid
 sudo nano /etc/squid/squid.conf
 ```
 
@@ -301,7 +309,7 @@ acl localnet src 192.168.1.0/24
 
 If you install samba, NetBIOS will be enabled automatic.   
 ```Bash
-sudo apt-get install samba samba-common-bin
+sudo apt install samba samba-common-bin
 sudo pdbedit –a pi
 sudo nano /etc/samba/smb.conf
 sudo systemctl restart smbd
@@ -331,7 +339,7 @@ udevadm info --attribute-walk --name=/dev/usb/hiddev0 | egrep 'manufacturer|prod
 ```  
 To install apcupsd:  
 ```Bash
-sudo apt-get install apcupsd apcupsd-doc
+sudo apt install apcupsd apcupsd-doc
 sudo nano /etc/apcupsd/apcupsd.conf
 ```  
 Which values you need to change(example for BK650-CH):  
@@ -386,6 +394,46 @@ sudo -- sh -c -e 'sudo echo "export PATH=$PATH:/usr/local/go/bin">>/etc/profile'
 ```  
 [Go main page](https://golang.org/)
 
+### Part 15 use byobu ###
+
+Byobu is a GPLv3 open source text-based window manager and terminal multiplexer.  
+It bases on tmux.   
+The main reason I use it is that I can return to a ssh session after abnormal disconnection.
+```Bash
+sudo apt install byobu
+byobu
+byobu --help
+```
+[Byobu main page](https://byobu.org/)
+
+### Part 16 connect to IPv6 ###
+
+It's for someone who only have IPv4 network.  
+
+#### with teredo ####
+
+You don't need to know what it is.  
+But if you want, [teredo](https://en.wikipedia.org/wiki/Teredo_tunneling)  
+```Bash
+# Linux :
+sudo apt install miredo
+ping6 ipv6.google.com
+# Windows :
+netsh interface teredo set state enterpriseclient server=default
+ping -6 ipv6.test-ipv6.com
+```
+
+#### with tunnelbroker ####
+
+If unfortunately, you are a "Internet" user in China, the first way may not fit you.  
+First, you need an non-Chinese IP to register a tunnelbroker account. (Of cause if you already have one, you can login with Chinese IP)  
+After logging in, click "Create Regular Tunnel".  
+![image](./images/tunnelbroker1.png)
+Then enter your internet IP into "IPv4 endpoint" and select a server.  
+Next, turn to "Example Configurations" and select your operating system.
+Remember to change "local","localaddress" or "source" to your local IP. (like 192.168.0.2)  
+If you are lucky enough, you can enjoy your IPv6 tunnel.  
+
 Create Services.
 ------
 
@@ -424,29 +472,35 @@ Others
 ### Compression ###
 
 ```Bash
-cat /sys/class/thermal/thermal_zone0/temp # check the temperature of CPU
 tar -zxvf *.tar.gz # unzip
 tar -xf *.tar.xz # unzip
-git -C /home/wangjihe/raspIP/ # set the location of git repositories
-top -u pi # like taskmgr
 tar -cvf /tmp/etc.tar /etc # Only bale, not compress
 tar -czvf /tmp/etc.tar.gz /etc # compress with gzip
 tar -cjvf /tmp/etc.tar.bz2 /etc # compress with bzip2
+```
+
+### Other tricks ###
+
+```Bash
+cat /sys/class/thermal/thermal_zone0/temp # check the temperature of CPU
+git -C /home/wangjihe/raspIP/ # set the location of git repositories
+top -u pi # like taskmgr
+htop # an excellent taaskmgr
+du -h -d1 [folder] # calculate folder size
+w # list pts sessions
+# kill backgroud pts
+pkill -HUP -t pts/0
+pkill -9 -t pts/0
 # set proxy
 export http_proxy=socks5://127.0.0.1:1926
 export https_proxy=socks5://127.0.0.1:1926
-# list and kill tty
-w # list tty sessions
-pkill -HUP -t pts/0
-pkill -9 -t pts/0
-du -h -d1 [folder] # calculate folder size
 # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
 ```
-  
+
 ### Network "top" ###
 
 Both ```iftop``` and ```nethogs``` are useful.  
-You can simply use ```apt-get``` to install them.  
+You can simply use ```apt``` to install them.  
 
 ### mount automatically at boot ###  
 

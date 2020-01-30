@@ -2,6 +2,7 @@ server
 {
         # Use ssl only
         listen 443 ssl http2;
+        listen [::]:443 ssl http2;
         ssl on;
         server_name files.wangjihe.cf;
         ssl_certificate /etc/nginx/ssl/*.wangjihe.cf/fullchain.pem;
