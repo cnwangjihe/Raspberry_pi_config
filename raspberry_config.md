@@ -64,11 +64,24 @@ sudo apt update && sudo apt upgrade
 sudo apt install vim g++ git ufw make cmake curl
 ```
 
-### Step 6 Security ###
+### Step 6 ufw ###
+
+The Uncomplicated Firewall (ufw) is a frontend for iptables and is particularly well-suited for host-based firewalls.
 ```Bash
 sudo ufw allow 2101
 sudo ufw enable
-sudo reboot
+sudo init 6
+```   
+All settings are stored at ```/etc/ufw/``` and ```/etc/iptables.rules```.   
+
+
+If you are using Debian 10(buster), the default iptables in nftables, which is no supported by ufw.  
+You should use the following command to correct it(switch to the old version).  
+```Bash
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+sudo update-alternatives --set arptables /usr/sbin/arptables-legacy
+sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy
 ```
 
 ### Step 7 install ntfs support ###
@@ -90,7 +103,8 @@ exit
 ```Bash
 tzselect
 sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
-date
+sudo timedatectl set-ntp true # enable ntp
+date # tell the time
 ```
 
 Helpful Parts
@@ -274,19 +288,26 @@ openssl passwd PASSWORD >>/etc/nginx/password
 ### Part 8 php ###
 
 Install php-fpm only.(without mysql)  
-```sudo apt install php7.0-fpm```
+```sudo apt install php7.3-fpm```
 
 Configure php.ini *(remember to use Ctrl+w to search)*  
 ```Bash
-sudo nano /etc/php/7.0/fpm/php.ini
+sudo nano /etc/php/7.3/fpm/php.ini
 {
     session.use_strict_mode = 1
     session.cookie_secure = 1
     ; use https to transport cookies
     session.cookie_lifetime = 900
+    session.cookie_httponly = 1
     ; 15 minutes
 }
-```  
+```    
+
+Enable php-fpm  
+```Bash
+sudo systemctl enable php7.3-fpm
+sudo systemctl start php7.3-fpm
+```
 
 ### Part 9 squid ###
 
@@ -434,6 +455,33 @@ Next, turn to "Example Configurations" and select your operating system.
 Remember to change "local","localaddress" or "source" to your local IP. (like 192.168.0.2)  
 If you are lucky enough, you can enjoy your IPv6 tunnel.  
 
+### Part 17 setup IPsec VPN ###
+
+Use auto setup scripts from [hwdsl2](https://github.com/hwdsl2/setup-ipsec-vpn)  
+```Bash
+wget https://git.io/vpnsetup -O vpnsetup.sh && sudo sh vpnsetup.sh
+sudo ufw allow 500 # ISAKMP
+sudo ufw allow 4500 # ISAKMP NAT
+sudo ufw allow 500 # Cisco IPsec
+sudo systemctl restart ipsec
+sudo systemctl restart xl2tpd
+# check logs
+grep pluto /var/log/auth.log
+grep xl2tpd /var/log/syslog
+# check status
+sudo ipsec status
+sudo ipsec verify
+# list connected clients
+ipsec whack --trafficstatus
+# update libreswan
+wget https://git.io/vpnupgrade -O vpnupgrade.sh && sudo sh vpnupgrade.sh
+```  
+[Server Setup](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/README.md)  
+[Server Uninstall](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/uninstall.md)  
+[Client IPsec/XAuth](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients-xauth.md)  
+[Client IPsec/L2TP](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients.md)  
+[User Management](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/manage-users.md)  
+
 Create Services.
 ------
 
@@ -487,6 +535,7 @@ git -C /home/wangjihe/raspIP/ # set the location of git repositories
 top -u pi # like taskmgr
 htop # an excellent taaskmgr
 du -h -d1 [folder] # calculate folder size
+sdiff -abls a.new a.old # compare files
 w # list pts sessions
 # kill backgroud pts
 pkill -HUP -t pts/0
