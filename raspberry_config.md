@@ -27,7 +27,7 @@ sudo nano /etc/ssh/sshd_config
 # Then you should use the key "raspberry" to login, instead of password
 
 # config google authenticator
-sudo apt install libpam-google-authenticator
+sudo apt update && sudo apt install libpam-google-authenticator
 nano /etc/pam.d/sshd
 # Add "auth required pam_google_authenticator.so" in a new line
 nano /etc/ssh/sshd_config
@@ -61,7 +61,11 @@ sudo apt update && sudo apt upgrade
 
 ### Step 5 install necessary packages ###
 ```Bash
-sudo apt install vim g++ git ufw make cmake curl
+sudo apt update && sudo apt install vim g++ git make cmake curl rpi-update
+# regularly update
+sudo apt upgrade
+# Raspberry Pi firmware update (!Please use proxy)
+sudo rpi-update
 ```
 
 ### Step 6 ufw ###
@@ -134,7 +138,7 @@ Raspbian's apt- will install version 2.92,but it has a serious vulnerability.
 So, after you install it with apt, you should follow [Part 3](#part-3-install-transmission-with-sources-code)
 
 ```Bash
-sudo apt install transmission-daemon
+sudo apt update && sudo apt install transmission-daemon
 ```
 
 ### Part 3 install transmission with sources code ###
@@ -143,7 +147,7 @@ Don't use this kind of way(unless you use raspbian)
 It is difficult to succeed.  
 
 ```Bash
-sudo apt install build-essential automake autoconf libtool pkg-config intltool libcurl4-openssl-dev libglib2.0-dev libevent-dev libminiupnpc-dev libgtk-3-dev libappindicator3-dev ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall
+sudo apt update && sudo apt install build-essential automake autoconf libtool pkg-config intltool libcurl4-openssl-dev libglib2.0-dev libevent-dev libminiupnpc-dev libgtk-3-dev libappindicator3-dev ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall
 wget https://raw.githubusercontent.com/transmission/transmission-releases/master/transmission-2.94.tar.xz # Don't use the wrong url
 tar -xf transmission-2.94.tar.xz
 cd transmission-2.94
@@ -252,7 +256,7 @@ cp /etc/letsencrypt/live/$DOMAIN/chain.pem /etc/nginx/$DOMAIN/chain.pem
 ```
 Or  
 ```Bash
-sudo apt install python-certbot-nginx
+sudo apt update && sudo apt install python-certbot-nginx
 sudo sudo certbot --authenticator webroot --installer nginx # use exist web server
 ```  
 
@@ -273,7 +277,7 @@ more information:
 ### Part 7 nginx ###
 
 Install:  
-```sudo apt install nginx nginx-extras```  
+```sudo apt update && sudo apt install nginx nginx-extras```  
 
 The [template](./nginx.conf.template) for /etc/nginx/conf.d/xxx.conf  
 
@@ -288,7 +292,7 @@ openssl passwd PASSWORD >>/etc/nginx/password
 ### Part 8 php ###
 
 Install php-fpm only.(without mysql)  
-```sudo apt install php7.3-fpm```
+```sudo apt update && sudo apt install php7.3-common php7.3-fpm php7.3-mbstring php7.3-bz2 php7.3-curl```
 
 Configure php.ini *(remember to use Ctrl+w to search)*  
 ```Bash
@@ -314,7 +318,7 @@ sudo systemctl start php7.3-fpm
 squid is a powerful proxy.  
 
 ```Bash
-sudo apt install squid
+sudo apt update && sudo apt install squid
 sudo nano /etc/squid/squid.conf
 ```
 
@@ -330,7 +334,7 @@ acl localnet src 192.168.1.0/24
 
 If you install samba, NetBIOS will be enabled automatic.   
 ```Bash
-sudo apt install samba samba-common-bin
+sudo apt update && sudo apt install samba samba-common-bin
 sudo pdbedit –a pi
 sudo nano /etc/samba/smb.conf
 sudo systemctl restart smbd
@@ -360,7 +364,7 @@ udevadm info --attribute-walk --name=/dev/usb/hiddev0 | egrep 'manufacturer|prod
 ```  
 To install apcupsd:  
 ```Bash
-sudo apt install apcupsd apcupsd-doc
+sudo apt update && sudo apt install apcupsd apcupsd-doc
 sudo nano /etc/apcupsd/apcupsd.conf
 ```  
 Which values you need to change(example for BK650-CH):  
@@ -421,7 +425,7 @@ Byobu is a GPLv3 open source text-based window manager and terminal multiplexer.
 It bases on tmux.   
 The main reason I use it is that I can return to a ssh session after abnormal disconnection.
 ```Bash
-sudo apt install byobu
+sudo apt update && sudo apt install byobu
 byobu
 byobu --help
 ```
@@ -437,7 +441,7 @@ You don't need to know what it is.
 But if you want, [teredo](https://en.wikipedia.org/wiki/Teredo_tunneling)  
 ```Bash
 # Linux :
-sudo apt install miredo
+sudo apt update && sudo apt install miredo
 ping6 ipv6.google.com
 # Windows :
 netsh interface teredo set state enterpriseclient server=default
