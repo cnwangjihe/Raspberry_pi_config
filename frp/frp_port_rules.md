@@ -2,12 +2,13 @@ frp port name rules
 ## first number ##
 2:ssh or telnet
 3:everything or ftp or website(temp)
-4:remote desktop
 5:frps_tcp_udp
 6:BT
 7:proxy
 8:frps web interface (Protected)
 9:web interface (Protected)
+10:rdp
+20:vnc
 ## other three numbers ##
 118:router
 101:raspberry pi
@@ -19,4 +20,10 @@ frp port name rules
 422:wgs_253
 423:wgs_230
 134:10.3.35.134
+160:Android
+121:10.21.121.253
+122:10.21.122.253
+123:10.21.123.253
+124:10.21.124.253
+125:10.21.125.253
 500-599:temp
