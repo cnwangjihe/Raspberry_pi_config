@@ -486,6 +486,58 @@ wget https://git.io/vpnupgrade -O vpnupgrade.sh && sudo sh vpnupgrade.sh
 [Client IPsec/L2TP](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients.md)  
 [User Management](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/manage-users.md)  
 
+### Part 18 KMS Server ###
+
+Use project [vlmcsd(KMS Emulator in C)](https://github.com/Wind4/vlmcsd).  
+```Bash
+cd /tmp
+wget https://github.com/Wind4/vlmcsd/releases/download/svn1112/binaries.tar.gz -O vlmcsd.tar.gz
+tar -zxvf vlmcsd.tar.gz
+sudo cp binaries/Linux/arm/little-endian/glibc/vlmcsd-armv7el-glibc /usr/bin/vlmcsd
+sudo chmod +x /usr/bin/vlmcsd
+rm binaries -r
+sudo nano /etc/systemd/system/vlmcsd.service
+{
+[Unit]
+    Description=vlmcsd kms server
+    After=network.target
+
+[Service]
+    Type=forking
+    PIDFile=/run/vlmcsd.pid
+    ExecStart=/usr/bin/vlmcsd -P 1688 -l /var/log/vlmcsd.log -p /run/vlmcsd.pid
+    ExecStop=/bin/kill -HUP $MAINPID
+    PrivateTmp=True
+    Restart=always
+    RestartSec=10
+
+[Install]
+    WantedBy=multi-user.target
+}
+sudo ufw allow 1688
+```  
+
+#### Windows Activation ####
+
+Find your OS GVLK in [Windows GVLK list](./Windows_GVLKs.md) and run the command below:  
+```Bash
+slmgr.vbs -upk
+slmgr.vbs -ipk OS_GVLK
+slmgr.vbs -skms KMS_HOST
+slmgr.vbs -ato
+slmgr.vbs -dlv
+```
+
+#### Office Activation ####
+
+Find your office GVLK in [Office GVLK list](./Office_GVLKs.md) and run the command below:  
+```Bash
+cd YOUR_OFFICE_DIR
+cscript ospp.vbs /inpkey:OFFICE_GVLK
+cscript ospp.vbs /sethst:KMS_HOST
+cscript ospp.vbs /act
+```
+
 Create Services.
 ------
 
