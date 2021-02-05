@@ -614,6 +614,17 @@ git config --global user.signingkey
 git commit -S -m your_comment # -S ---> Sign
 ```
 
+### Part 21 Git Commands ###
+```Bash
+git add -A # trace all files (respect .gitignore)
+git config --global core.autocrlf true # use CRLF in checkout files, but replace to LF in commit
+git status # show repository status
+git reset HEAD . # revert add 
+git remote set-url origin https_addr/ssh_addr # switch remote address
+git checkout xxx # switch branch
+```
+
+
 Create Services.
 ------
 
