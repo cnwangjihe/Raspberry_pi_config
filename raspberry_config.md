@@ -28,6 +28,7 @@ sudo nano /etc/ssh/sshd_config
 
 # config google authenticator
 sudo apt update && sudo apt install libpam-google-authenticator
+google-authenticator
 nano /etc/pam.d/sshd
 # Add "auth required pam_google_authenticator.so" in a new line
 nano /etc/ssh/sshd_config
@@ -216,22 +217,26 @@ alias acme.sh=~/.acme.sh/acme.sh
 # sudo -- sh -c -e "echo '45 0 * * * sudo \"/home/pi/.acme.sh\"/acme.sh --cron --home \"/home/pi/.acme.sh\" > /dev/null' >> /var/spool/cron/crontabs/pi"
 sudo mkdir /etc/nginx/ssl 
 sudo chmod -R 777 /etc/nginx/ssl
-export DP_Id="XXXXXX"
-export DP_Key="XXXXXXXXXXXXX"
+# export DP_Id="XXXXXX"
+# export DP_Key="XXXXXXXXXXXXX"
 # use the api of DNSpod
 DOMAIN="wangjihe.tk"
 mkdir /etc/nginx/ssl/$DOMAIN
-acme.sh --issue --dns dns_dp -d $DOMAIN
-# if you use cloudflare
+# acme.sh --issue --dns dns_dp -d $DOMAIN
+# if you use cloudflare, recommand use API token (with Zone.DNS.edit)
+export CF_Token="xxxxxxx"
+export CF_Account_ID="xxxxxxx"
+export CF_Zone_ID="xxxxxxx"
+# or global api key
 # CF_Email=XXX@XX.XX
 # CF_Key=XXXXXXXXX
-# acme.sh --issue --dns dns_cf -d $DOMAIN
+acme.sh --issue --dns dns_cf -d $DOMAIN
 acme.sh --install-cert -d $DOMAIN \
 --cert-file      /etc/nginx/ssl/$DOMAIN/ca.pem  \
 --key-file       /etc/nginx/ssl/$DOMAIN/privkey.pem  \
 --fullchain-file /etc/nginx/ssl/$DOMAIN/fullchain.pem \
 --ca-file      /etc/nginx/ssl/$DOMAIN/chain.pem  \
---reloadcmd     "sudo service nginx force-reload"
+--reloadcmd     "service nginx force-reload"
 # acme.sh --renew -d example.com --force
 # force refresh
 acme.sh --upgrade --auto-upgrade # update automatically
@@ -263,8 +268,7 @@ sudo sudo certbot --authenticator webroot --installer nginx # use exist web serv
 Deploying Diffie-Hellman for TLS  
 
 ```Bash
-cd /etc/nginx/ssl
-openssl dhparam -out dhparams.pem 2048
+openssl dhparam -out /etc/nginx/ssl/dhparams.pem 4096
 # Then configure nginx
 ```  
 
@@ -292,7 +296,7 @@ openssl passwd PASSWORD >>/etc/nginx/password
 ### Part 8 php ###
 
 Install php-fpm only.(without mysql)  
-```sudo apt update && sudo apt install php7.3-common php7.3-fpm php7.3-mbstring php7.3-bz2 php7.3-curl```
+```sudo apt update && sudo apt install php7.3-common php7.3-fpm php7.3-mbstring php7.3-bz2 php7.3-curl php7.3-bcmath```
 
 Configure php.ini *(remember to use Ctrl+w to search)*  
 ```Bash
@@ -522,8 +526,8 @@ sudo ufw allow 1688
 Find your OS GVLK in [Windows GVLK list](./Windows_GVLKs.md) and run the command below:  
 ```Bash
 slmgr.vbs -upk
-slmgr.vbs -ipk OS_GVLK
-slmgr.vbs -skms KMS_HOST
+slmgr.vbs -ipk 33PXH-7Y6KF-2VJC9-XBBR8-HVTHH
+slmgr.vbs -skms ip.wangjihe.top
 slmgr.vbs -ato
 slmgr.vbs -dlv
 ```
@@ -536,6 +540,78 @@ cd YOUR_OFFICE_DIR
 cscript ospp.vbs /inpkey:OFFICE_GVLK
 cscript ospp.vbs /sethst:KMS_HOST
 cscript ospp.vbs /act
+```
+
+### Part 19 haporxy ###
+
+A load balancer.  
+But I use it to block plain http access ,requests as unknow domain or directly with ip.  
+Need SNI support,so no working with ESNI.  
+```
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    timeout connect 10s
+    timeout client  50s
+    timeout server  20s
+
+frontend web_server
+    mode tcp
+    bind :443                                               # listen port
+    acl d1 req.ssl_sni -i domain1.example.com               # your domain 1
+    acl d2 req.ssl_sni -i domain2.example.com               # your domain 2
+
+    tcp-request inspect-delay 2s
+    tcp-request content silent-drop if HTTP                 # drop all http request to 443
+    tcp-request content silent-drop if !d1 !d2              # drop all sni not known
+    tcp-request content accept if { req.ssl_hello_type 1 }  # accept ssl/tls connection
+    default_backend https_server                            # forward traffic to backend(web server like nginx)
+
+backend https_server
+    mode tcp
+    server serverhttps 127.0.0.1:37444                      # real web server
+```
+
+Use 'silent-drop' will prevent client from being notified, and on browser is ERR_TIMED_OUT, like this port is closed.  
+If use 'reject', connection will be closed immediately, and on browser is ERR_EMPTY_RESPONSE or ERR_CONNECTION_CLOSED.  
+
+[offical doc](https://cbonte.github.io/haproxy-dconv/)  
+[http&https in one port](http://timjrobinson.com/haproxy-how-to-run-http-https-on-the-same-port/)  
+[drop from unknown hosts](https://stackoverflow.com/questions/56501040/how-can-i-close-haproxy-frontend-connections-coming-from-unknown-hosts)  
+
+
+
+### Part 20 Github ssh key && GPG key ###
+
+```Bash
+ssh-keygen -t ed25519 -C "github_email@xxx.com"
+# then add public key to [github](https://github.com/settings/keys)
+nano ~/.ssh/config
+{
+    Host github.com
+        HostName github.com
+        IdentityFile ~/.ssh/github_private_key
+}
+git config --global user.email "github_email@xxx.com"
+git config --global user.name "account_name"
+ssh -T git@github.com # test sshkey
+
+export GPG_TTY=$(tty)
+gpg2 --full-generate-key
+gpg2 --list-secret-keys --keyid-format LONG
+gpg --armor --export XXXXXXXXXXXXXXXX
+# then add gpg public key to [github](https://github.com/settings/keys)
+git config --global user.signingkey
+
+git commit -S -m your_comment # -S ---> Sign
 ```
 
 Create Services.
@@ -600,6 +676,10 @@ pkill -9 -t pts/0
 export http_proxy=socks5://127.0.0.1:1926
 export https_proxy=socks5://127.0.0.1:1926
 # Sublime text 3 ,Preferences -> Settings-Syntax Specific -> "default_line_endings":"unix"
+cp -rl(s) src dst # use hard(soft) link instead of copy
+find . -type f -name "*.log" -print0 | xargs -0 rm -f
+sed -i 's/origin/dst/g' *.xxx # replace string in file
+cat /dev/null > ~/.bash_history && history -c && exit # entirely clear bash history
 ```
 
 ### Network "top" ###
@@ -640,12 +720,13 @@ echo '01'>demoCA/serial
 openssl genrsa -out roota.key 2048
 openssl req -new -key roota.key -out roota.csr
 openssl ca -extensions v3_ca -in roota.csr -out roota.crt -cert CARoot.crt -keyfile CARoot.key -days 1826 -policy policy_anything
+cat roota.crt CARoot.crt | tee roota_fullchain.crt
 # 签发SSL证书
 openssl genrsa -out server.key 2048
+# openssl ecparam -name secp256k1 -genkey -out server.key 2048
 openssl req -new -key server.key -out server.csr -sha256 -days 3650 -reqexts SAN -config <(cat /usr/lib/ssl/openssl.cnf <(printf '[SAN]\nsubjectAltName=DNS:www.baidu.com,IP:192.168.1.1'))
 openssl ca -in server.csr -cert roota.crt -keyfile roota.key -out server.crt -md sha256 -extensions SAN -config <(cat /usr/lib/ssl/openssl.cnf <(printf '[SAN]\nsubjectAltName=DNS:www.baidu.com,IP:192.168.1.1'))
 cat server.crt roota.crt CARoot.crt | tee server_fullchain.crt
-cat roota.crt CARoot.crt | tee roota_fullchain.crt
 # 导出合并为p12格式
 openssl pkcs12 -export -in server.crt -inkey server.key -name "FriendlyName" -chain -CAfile roota_fullchain.crt -out server.pfx
 # 吊销证书

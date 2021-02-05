@@ -27,3 +27,5 @@ frp port name rules
 124:10.21.124.253
 125:10.21.125.253
 500-599:temp
+600:com_router
+601:com_mom
