@@ -106,11 +106,16 @@ exit
 
 ### Step 8 Set timezone ###
 ```Bash
-tzselect
-sudo cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
-sudo timedatectl set-ntp true # enable ntp
-date # tell the time
+sudo dpkg-reconfigure tzdata # old method, works on new system, too
+sudo timedatectl set–timezone Asia/Shanghai # new method
+# don't use 'apt install ntp', instead, please use systemd-timesyncd, which is a light ntp client
+sudo nano /etc/systemd/timesyncd.conf # edit ntp config
+sudo timedatectl set-ntp true  # enable ntp
+timedatectl status # show time
+timedatectl timesync-status # show ntp sync state
 ```
+[Arch Wiki](https://wiki.archlinux.org/index.php/systemd-timesyncd)
+
 
 Helpful Parts
 -------------
@@ -609,7 +614,7 @@ gpg2 --full-generate-key
 gpg2 --list-secret-keys --keyid-format LONG
 gpg --armor --export XXXXXXXXXXXXXXXX
 # then add gpg public key to [github](https://github.com/settings/keys)
-git config --global user.signingkey
+git config --global user.signingkey XXXXXXXXXXXXXXXX
 
 git commit -S -m your_comment # -S ---> Sign
 ```
@@ -622,6 +627,45 @@ git status # show repository status
 git reset HEAD . # revert add 
 git remote set-url origin https_addr/ssh_addr # switch remote address
 git checkout xxx # switch branch
+```
+
+### Part 21 Systemd ###  
+It's time to embrace the systemd.  
+
+#### systemctl ####
+Default config dir: /etc/systemd/system/ --> /usr/lib/systemd/system/  
+```Bash
+systemctl status # check status of all units
+systemctl daemon-reload # reload systemd
+systemctl list-unit-files # show a table listing all units, --type=
+systemctl list-units # list all running units, --all, --failed, --type=, --state=
+# for a specific unit
+systemctl status/enable/disable/start/stop/restart/kill/show/cat/list-dependencies xxx
+```
+
+#### journalctl ####
+Log manager. Default config file: /etc/systemd/journald.conf  
+```Bash
+sudo journalctl --vacuum-time=10years # set how long the log will be saved
+sudo journalctl --vacuum-size=128G # set disk limitation
+sudo journalctl --disk-usage # show disk usage
+sudo journalctl -u x1 -u x2 # show log of units, -f [real time], --since "2020-01-01 00:00:00", -p err/debug, -k [kernel]
+```
+
+#### others ####
+```Bash
+systemd-analyze # show boot time usage
+systemd-analyze blame # of each unit
+hostnamectl # show hostname
+sudo hostnamectl set-hostname xxx
+localectl # show system language
+sudo localectl set-locale LANG=en_GB.utf8
+timedatectl # show tzdata
+timedatectl list-timezones # list available time zones
+sudo timedatectl set-timezone Asia/Shanghai
+loginctl list-sessions # list logon sessions
+loginctl list-users # list logon users
+loginctl show-user xxx # show user info
 ```
 
 
@@ -707,7 +751,8 @@ ls -l /dev/disk/by-uuid
 Then modify ```/etc/fstab```, an example:  
 ```Bash
 UUID=240EB1E10EB1ABE4 /mnt/HDD1 ntfs-3g defaults,exec,umask=0000 0 0
-```  
+```    
+You can check the fstab file with command ```sudo findmnt --verify --verbose```  
 To know more information, please look at [here](https://wiki.archlinux.org/index.php/Fstab).
 
 **Warning:  
