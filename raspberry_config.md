@@ -39,7 +39,8 @@ sudo systemctl restart sshd
 
 ```
 
-### Step 3 set static IP ###
+### Step 3 configure network ###
+For old systems/Debian.  
 ```Bash
 # sudo nano /etc/dhcpcd.conf
 sudo echo 'interface eth0'>>/etc/dhcpcd.conf
@@ -47,22 +48,32 @@ sudo echo 'inform 192.168.31.101'>>/etc/dhcpcd.conf
 sudo echo 'static routers=192.168.31.1'>>/etc/dhcpcd.conf
 sudo echo 'static domain_name_servers=114.114.114.114 8.8.8.8'>>/etc/dhcpcd.conf
 ```
+For ubuntu with netplan.  
+Modify config file ```/etc/netplan/xxx.yaml```.  
+```yaml
+network:
+    ethernets:
+        enp1s0:
+            dhcp4: no
+            addresses: [192.168.31.101/24]
+            gateway4: 192.168.31.1
+            nameservers:
+                addresses: [223.5.5.5,114.114.114.114,119.29.29.29,8.8.8.8,1.1.1.1]
+    version: 2
+```
 
-### Step 4 edit hosts && change the source ###
+
+### Step 4 Change apt source ###
+Here I use [HIT](https://mirrors.hit.edu.cn/), and you can find proper mirror sites on [mirrorz](https://mirrorz.org/).  
 ```Bash
-# sudo nano /etc/hosts
-sudo -- sh -c -e "sudo echo '151.101.72.249 http://global-ssl.fastly.Net'>>/etc/hosts"
-sudo -- sh -c -e "sudo echo '192.30.253.112 http://github.com'>>/etc/hosts"
-# sudo nano /etc/apt/sources.list
-sudo -- sh -c -e "sudo echo 'deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib'>/etc/apt/sources.list"
-sudo -- sh -c -e "sudo echo 'deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib'>>/etc/apt/sources.list"
-sudo -- sh -c -e "sudo rm /etc/apt/sources.list.d/raspi.list"
-sudo apt update && sudo apt upgrade 
+sudo nano /etc/apt/sources.list
+sudo apt update
+sudo apt upgrade
 ```
 
 ### Step 5 install necessary packages ###
 ```Bash
-sudo apt update && sudo apt install vim g++ git make cmake curl rpi-update
+sudo apt install vim g++ git make cmake curl # rpi-update
 # regularly update
 sudo apt upgrade
 # Raspberry Pi firmware update (!Please use proxy)
@@ -90,6 +101,7 @@ sudo update-alternatives --set ebtables /usr/sbin/ebtables-legacy
 ```
 
 ### Step 7 install ntfs support ###
+Use source code:  
 ```Bash
 sudo su
 cd /usr/local/src
@@ -103,6 +115,11 @@ exit
 # sudo fdisk -l
 # sudo mount -t ntfs-3g /dev/sdb1 /mnt/usb
 ```
+For ubuntu users, you can also use ```apt``` to install it.
+```Bash
+sudo apt install ntfs-3g
+```
+
 
 ### Step 8 Set timezone ###
 ```Bash
@@ -137,8 +154,9 @@ make && make install_sw # (update)
 exit
 ```
 
-### Part 2 install transmission with apt ###
+### Part 2 Transmission ###
 
+#### with apt ####
 **Attention!!!**  
 Raspbian's apt- will install version 2.92,but it has a serious vulnerability.  
 So, after you install it with apt, you should follow [Part 3](#part-3-install-transmission-with-sources-code)
@@ -147,7 +165,7 @@ So, after you install it with apt, you should follow [Part 3](#part-3-install-tr
 sudo apt update && sudo apt install transmission-daemon
 ```
 
-### Part 3 install transmission with sources code ###
+#### from source code ####
 
 Don't use this kind of way(unless you use raspbian)  
 It is difficult to succeed.  
@@ -164,7 +182,7 @@ Then use [init.d](#initd) or [systemd](#systemd) to configure transmission servi
 By the way, the .config folder is at ```/var/lib/transmission-daemon```, or you can use ```sudo cat /etc/passwd``` to check the main folder of user debian-transmission(or transmission).  
 And the settings.json is at ```/etc/transmission-daemon```
 
-### Part 4 frp ###
+### Part 3 frp ###
 
 Compile from source code.  
 First of all, you need to [install Go](#part-14-install-go).  
@@ -200,16 +218,7 @@ cd /etc/frps
 ```  
 *Notice:frp cannot forward ftp, because ftp need a random port.*
 
-### Part 5 git with ssh ###
-
-```Bash
-ssh-keygen -t rsa -C "1321942045@qq.com"
-# ignore location ans passphrase.
-# Usually, the key will be stored in %HOME%/.ssh, include id_rsa ans id_rsa.pub.
-# Copy the text in id_rsa.pub to profile(github or gitlab), to add new ssh key.
-```
-
-### Part 6 use ssl to connect web interface ###
+### Part 4 configure ssl cert ###
 
 use [let's encrypt](https://letsencrypt.org/)
 
@@ -283,7 +292,7 @@ more information:
 [SSLlabs](https://www.ssllabs.com/)  
 [Deploying Diffie-Hellman for TLS](https://weakdh.org/sysadmin.html)  
 
-### Part 7 nginx ###
+### Part 5 nginx ###
 
 Install:  
 ```sudo apt update && sudo apt install nginx nginx-extras```  
@@ -298,7 +307,7 @@ openssl passwd PASSWORD >>/etc/nginx/password
 # better not longer than 8
 ```
 
-### Part 8 php ###
+### Part 6 php ###
 
 Install php-fpm only.(without mysql)  
 ```sudo apt update && sudo apt install php7.3-common php7.3-fpm php7.3-mbstring php7.3-bz2 php7.3-curl php7.3-bcmath```
@@ -322,7 +331,7 @@ sudo systemctl enable php7.3-fpm
 sudo systemctl start php7.3-fpm
 ```
 
-### Part 9 squid ###
+### Part 7 squid ###
 
 squid is a powerful proxy.  
 
@@ -339,7 +348,7 @@ http_access allow all
 acl localnet src 192.168.1.0/24
 ```
 
-### Part 10 samba ###
+### Part 8 samba ###
 
 If you install samba, NetBIOS will be enabled automatic.   
 ```Bash
@@ -351,7 +360,7 @@ sudo systemctl restart smbd
 Template of [smb.conf](./smb.conf.template).  
 
 
-### Part 11 DDNS ###
+### Part 9 DDNS ###
 
 The project of NewFuture, [DDNS](https://github.com/NewFuture/DDNS) Support Cloudflare, Dnspod, Dns.com ...  
 Use cron to run automatically:  
@@ -362,7 +371,7 @@ crontab -e
 }
 ```
 
-### Part 12 Setup ups ###
+### Part 10 ups ###
 
 If you have an ups of APC, you can install apcupsd to receive a power down signal.  
 
@@ -399,7 +408,7 @@ More information:
 *You can find the way to change the script that apcupsd will execute*  
 [https://wiki.debian.org/apcupsd](https://wiki.debian.org/apcupsd)  
 
-### Part 13 install crypto++ ###
+### Part 11 crypto++ ###
 
 Install from source code.  
 
@@ -418,7 +427,7 @@ rm -rf cryptopp7
 [Install](https://github.com/weidai11/cryptopp/blob/master/Install.txt)  
 [Usage](https://www.cryptopp.com/docs/ref/)  
 
-### Part 14 install go ###
+### Part 12 golang ###
 
 Install from binary release. (can choose any version)  
 ```Bash
@@ -428,10 +437,10 @@ sudo -- sh -c -e 'sudo echo "export PATH=$PATH:/usr/local/go/bin">>/etc/profile'
 ```  
 [Go main page](https://golang.org/)
 
-### Part 15 use byobu ###
+### Part 13 byobu ###
 
 Byobu is a GPLv3 open source text-based window manager and terminal multiplexer.  
-It bases on tmux.   
+It bases on tmux/screen.   
 The main reason I use it is that I can return to a ssh session after abnormal disconnection.
 ```Bash
 sudo apt update && sudo apt install byobu
@@ -440,7 +449,7 @@ byobu --help
 ```
 [Byobu main page](https://byobu.org/)
 
-### Part 16 connect to IPv6 ###
+### Part 14 IPv6 ###
 
 It's for someone who only have IPv4 network.  
 
@@ -468,7 +477,7 @@ Next, turn to "Example Configurations" and select your operating system.
 Remember to change "local","localaddress" or "source" to your local IP. (like 192.168.0.2)  
 If you are lucky enough, you can enjoy your IPv6 tunnel.  
 
-### Part 17 setup IPsec VPN ###
+### Part 15 IPsec VPN ###
 
 Use auto setup scripts from [hwdsl2](https://github.com/hwdsl2/setup-ipsec-vpn)  
 ```Bash
@@ -495,7 +504,7 @@ wget https://git.io/vpnupgrade -O vpnupgrade.sh && sudo sh vpnupgrade.sh
 [Client IPsec/L2TP](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/clients.md)  
 [User Management](https://github.com/hwdsl2/setup-ipsec-vpn/blob/master/docs/manage-users.md)  
 
-### Part 18 KMS Server ###
+### Part 16 KMS Server ###
 
 Use project [vlmcsd(KMS Emulator in C)](https://github.com/Wind4/vlmcsd).  
 ```Bash
@@ -547,7 +556,7 @@ cscript ospp.vbs /sethst:KMS_HOST
 cscript ospp.vbs /act
 ```
 
-### Part 19 haporxy ###
+### Part 17 haporxy ###
 
 A load balancer.  
 But I use it to block plain http access ,requests as unknow domain or directly with ip.  
@@ -594,7 +603,7 @@ If use 'reject', connection will be closed immediately, and on browser is ERR_EM
 
 
 
-### Part 20 Github ssh key && GPG key ###
+### Part 18 Github ssh key && GPG key ###
 
 ```Bash
 ssh-keygen -t ed25519 -C "github_email@xxx.com"
@@ -619,7 +628,7 @@ git config --global user.signingkey XXXXXXXXXXXXXXXX
 git commit -S -m your_comment # -S ---> Sign
 ```
 
-### Part 21 Git Commands ###
+### Part 19 git ###
 ```Bash
 git add -A # trace all files (respect .gitignore)
 git config --global core.autocrlf true # use CRLF in checkout files, but replace to LF in commit
@@ -629,7 +638,7 @@ git remote set-url origin https_addr/ssh_addr # switch remote address
 git checkout xxx # switch branch
 ```
 
-### Part 21 Systemd ###  
+### Part 20 systemd ###  
 It's time to embrace the systemd.  
 
 #### systemctl ####
