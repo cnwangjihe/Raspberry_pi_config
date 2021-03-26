@@ -1,8 +1,8 @@
-## vscode + platformIO + STM32CubeMX + FreeRTOS 配置 ##
+# vscode + platformIO + STM32CubeMX + FreeRTOS 配置 #
 
 注意,本为基于STM32F4系列,若你使用的芯片有所不同,请视情况自行修改部分内容  
 
-#### STM32CubeMX ####
+### STM32CubeMX ###
 主要要注意的是Project Manager下的配置(请务必在第一次Generate Code之前修改):  
 1. Project下 Application Structure 选择`Basic` (将不会生成额外一层Core文件夹)  
 2. Project下 Toochain/IDE 选择 `Other Toochains (GPDSC)` (适配PlatformIO)  
@@ -11,7 +11,7 @@
 ![image](./images/stmcube1.png)  
 ![image](./images/stmcube2.png)  
 
-#### platformIO ####
+### platformIO ###
 先在vscode安装该插件,等待其下载必要组件,并遵循右小角提示重启vscode,安装完毕后会看到vscode左边栏出现「蚂蚁头」  
 点击后选择Open,等待右边页面加载(首次可能需要联网,比较慢),然后点击`+New Project`  
 ![PlatformIO](./images/pio1.png "PlatformIO")  
@@ -56,7 +56,7 @@ src_dir=Src                                          ; 告知platformIO包含.c�
 ![platformio工具栏](./images/pio4.png "platformio工具栏")  
 
 
-#### FreeRTOS ####
+### FreeRTOS ###
 如果启用了FreeRTOS,还需要一些额外操作:  
 1. 打开项目文件夹,然后在右上角`文件->打开Windows Powershell`, 弹出一个蓝色窗口  
 2. 输入下列内容(当然，建议复制)  
@@ -68,11 +68,11 @@ cmd /c mklink /j Src\FreeRTOS  Middlewares\Third_Party\FreeRTOS
 ![产生的文件夹链接](./images/freertos2.png "产生的文件夹链接")  
 
 
-#### Debug ####
+### 调试 ###
 platformIO支持调试，只需在vscode中按下`F5`  
 
 
-#### 坑 ####
+### 坑 ###
 由于这种使用方法是某vscode狂热粉丝搞出来的究极缝合怪,难免有一些~~深不见底~~小坑需要注意  
 
 1. 外部晶振配置:
