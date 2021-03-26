@@ -61,6 +61,7 @@ network:
                 addresses: [223.5.5.5,114.114.114.114,119.29.29.29,8.8.8.8,1.1.1.1]
     version: 2
 ```
+then restart netplan:```sudo netplan apply```
 
 
 ### Step 4 Change apt source ###
@@ -665,7 +666,7 @@ sudo journalctl -u x1 -u x2 # show log of units, -f [real time], --since "2020-0
 ```Bash
 systemd-analyze # show boot time usage
 systemd-analyze blame # of each unit
-hostnamectl # show hostname
+hostnamectl # show hostname, os, kernel version
 sudo hostnamectl set-hostname xxx
 localectl # show system language
 sudo localectl set-locale LANG=en_GB.utf8
@@ -744,6 +745,8 @@ cp -rl(s) src dst # use hard(soft) link instead of copy
 find . -type f -name "*.log" -print0 | xargs -0 rm -f
 sed -i 's/origin/dst/g' *.xxx # replace string in file
 cat /dev/null > ~/.bash_history && history -c && exit # entirely clear bash history
+lsb_release -a # show os info
+cat /etc/os-release # show os info
 ```
 
 ### Network "top" ###
