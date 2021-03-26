@@ -82,7 +82,7 @@ platformIO支持调试，只需在vscode中按下`F5`
 ![修改HSE_VALUE](./images/hse.png "修改HSE_VALUE")  
 
 
-参考资料:
+参考资料:  
 1.[UART乱码(文章与实际情况有出入)](https://blog.csdn.net/xiebaocheng12138/article/details/78116393)  
 2.[CubeMX with platformIO](https://community.platformio.org/t/cubemx-with-freertos/6463)  
 3.[FreeRTOS](https://zhuanlan.zhihu.com/p/90608412)  
