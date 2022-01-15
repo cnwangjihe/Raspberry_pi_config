@@ -673,6 +673,24 @@ sudo journalctl -u x1 -u x2 # show log of units, -f [real time], --since "2020-0
 sudo journalctl -n 1000 # show last 1000 logs
 ```
 
+
+#### others ####
+```Bash
+systemd-analyze # show boot time usage
+systemd-analyze blame # of each unit
+hostnamectl # show hostname, os, kernel version
+sudo hostnamectl set-hostname xxx
+localectl # show system language
+sudo localectl set-locale LANG=en_GB.utf8
+timedatectl # show tzdata
+timedatectl list-timezones # list available time zones
+sudo timedatectl set-timezone Asia/Shanghai
+loginctl list-sessions # list logon sessions
+loginctl list-users # list logon users
+loginctl show-user xxx # show user info
+```  
+
+
 ### Part 21 AppArmor ###
 AppArmor is a Mandatory Access Control (MAC) system which is a kernel (LSM) enhancement to 
 confine programs to a limited set of resources, like SELinux, but with some easy-to-use tools.  
@@ -702,23 +720,6 @@ flags=(attach_disconnected)
 [apparmor强制访问控制系统配置](https://blog.logc.icu/post/2021-04-08_18-09/)  
 [在 Ubuntu 上配置 AppArmor 实现强制访问控制（MAC）](https://www.mf8.biz/ubuntu-apparmor-openresty/)  
 [AppArmor 'Failed name lookup - disconnected path'](https://bugs.launchpad.net/apparmor/+bug/1578529)  
-
-
-#### others ####
-```Bash
-systemd-analyze # show boot time usage
-systemd-analyze blame # of each unit
-hostnamectl # show hostname, os, kernel version
-sudo hostnamectl set-hostname xxx
-localectl # show system language
-sudo localectl set-locale LANG=en_GB.utf8
-timedatectl # show tzdata
-timedatectl list-timezones # list available time zones
-sudo timedatectl set-timezone Asia/Shanghai
-loginctl list-sessions # list logon sessions
-loginctl list-users # list logon users
-loginctl show-user xxx # show user info
-```
 
 
 Create Services.
