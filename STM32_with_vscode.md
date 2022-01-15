@@ -77,7 +77,7 @@ platformIO支持调试，只需在vscode中按下`F5`
 
 1. 外部晶振配置:
 由于platformIO很没精神,啥都用自己的(指HAL库),导致使用外部晶振时,STM32CubeMX生成的配置被忽略了,需要手动修改晶振频率  
-打开文件`C:\Users\XXXX\.platformio\packages\framework-stm32cubef4\Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c`,`XXXX`是你自己的Windows用户名  
+打开文件`C:\Users\XXXX\.platformio\packages\framework-stm32cubef4\Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c`以及`C:\Users\XXXX\.platformio\packages\framework-stm32cubef4\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_conf.h`,`XXXX`是你自己的Windows用户名  
 搜索`#define HSE_VALUE`, 修改为你板子上外部高速晶振的频率(默认是16000000,即16MHz,此处我改为了8MHz)  
 ![修改HSE_VALUE](./images/hse.png "修改HSE_VALUE")  
 

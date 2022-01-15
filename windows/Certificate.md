@@ -22,6 +22,7 @@ After installed, if you want to set other extra properties, you need to write th
        _continue_ = "1.3.6.1.5.5.7.3.1,"
 ```  
 At the "Enhanced Key Usage property", you need to enter the OID instead of the name of property, youcan find them [here](./OID.txt).  
+Find more in [here](https://www.alvestrand.no/objectid/top.html)
 Then, use command ```certutil -repairstore ROOT "{SerialNumber}" install.inf```.  
 You can find the serial number by this
 ![SerialNumber](img/CertSerialNumber.png)

@@ -16,6 +16,7 @@ frp port name rules
 210:Main srv 1 (10.3.32.10)
 203:server 2003 (10.3.32.3)
 202:Main srv 0 (10.3.32.2)
+410:wgs_210 (surveillance)
 421:wgs_252 (teacher)
 422:wgs_253
 423:wgs_230
@@ -29,3 +30,5 @@ frp port name rules
 500-599:temp
 600:com_router
 601:com_mom
+913:DigitalOcean
+914:do_Ghastlcon

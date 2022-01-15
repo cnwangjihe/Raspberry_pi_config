@@ -240,12 +240,19 @@ mkdir /etc/nginx/ssl/$DOMAIN
 # acme.sh --issue --dns dns_dp -d $DOMAIN
 # if you use cloudflare, recommand use API token (with Zone.DNS.edit)
 export CF_Token="xxxxxxx"
-export CF_Account_ID="xxxxxxx"
-export CF_Zone_ID="xxxxxxx"
+# export CF_Account_ID="xxxxxxx"
+# export CF_Zone_ID="xxxxxxx"
 # or global api key
 # CF_Email=XXX@XX.XX
 # CF_Key=XXXXXXXXX
 acme.sh --issue --dns dns_cf -d $DOMAIN
+# Or standalone mode (need 80 opened && socat)
+sudo setcap 'cap_net_bind_service=+ep' /usr/bin/socat # allow socat to bind the low ports
+acme.sh --issue -d $DOMAIN --standalone
+# Or use web server mode
+WEBROOT="/var/www/html"
+acme.sh --issue -d $DOMAIN -w $WEBROOT
+# install
 acme.sh --install-cert -d $DOMAIN \
 --cert-file      /etc/nginx/ssl/$DOMAIN/ca.pem  \
 --key-file       /etc/nginx/ssl/$DOMAIN/privkey.pem  \
@@ -322,7 +329,9 @@ sudo nano /etc/php/7.3/fpm/php.ini
     ; use https to transport cookies
     session.cookie_lifetime = 900
     session.cookie_httponly = 1
+    session.cookie_samesite = "Strict"
     ; 15 minutes
+    session.gc_probability = 1
 }
 ```    
 
@@ -637,6 +646,7 @@ git status # show repository status
 git reset HEAD . # revert add 
 git remote set-url origin https_addr/ssh_addr # switch remote address
 git checkout xxx # switch branch
+git rm --cached -r XXX # delete file/dir on git only
 ```
 
 ### Part 20 systemd ###  
@@ -660,7 +670,39 @@ sudo journalctl --vacuum-time=10years # set how long the log will be saved
 sudo journalctl --vacuum-size=128G # set disk limitation
 sudo journalctl --disk-usage # show disk usage
 sudo journalctl -u x1 -u x2 # show log of units, -f [real time], --since "2020-01-01 00:00:00", -p err/debug, -k [kernel]
+sudo journalctl -n 1000 # show last 1000 logs
 ```
+
+### Part 21 AppArmor ###
+AppArmor is a Mandatory Access Control (MAC) system which is a kernel (LSM) enhancement to 
+confine programs to a limited set of resources, like SELinux, but with some easy-to-use tools.  
+```Bash
+sudo apt install apparmor-profiles apparmor-utils # insttall AppArmor tools
+sudo aa-unconfined # show all process with network access but without AppArmor profile
+sudo aa-autodep xxx # generate profile for xxx according to ldd output.
+sudo aa-logprof # analyze audit log to "learn" profile
+sudo aa-complain xxx # switch xxx profile to "complain mode", which ALLOW everything except sth already denied in profile, but leave audit log,
+sudo aa-enforce xxx # switch xxx profile to "enforce mode", which DENY everything, except sth allowed in profile.
+sudo aa-disable xxx # disable AppArmor for xxx
+```
+
+#### Tips ####
+Be careful of `CAP_*`, you should try to adjust the file permission instead of giving it to the program without thinking twice.  
+`aa-logprof` still cannot handle everything for now, sometimes you need to adjust the profile manually.  
+```Bash
+# operation="file_mmap" info="Failed name lookup - disconnected path" error=-13
+# If you see that in audit log, you need to add
+flags=(attach_disconnected)
+# to profile
+```
+
+[Building Profiles from the Command Line - SUSE](https://documentation.suse.com/en-us/sled/15-SP2/html/SLED-all/cha-apparmor-commandline.html)  
+[F\*\*k AppArmor](https://presentations.nordisch.org/apparmor/#/)  
+[Linux Capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html)  
+[apparmor强制访问控制系统配置](https://blog.logc.icu/post/2021-04-08_18-09/)  
+[在 Ubuntu 上配置 AppArmor 实现强制访问控制（MAC）](https://www.mf8.biz/ubuntu-apparmor-openresty/)  
+[AppArmor 'Failed name lookup - disconnected path'](https://bugs.launchpad.net/apparmor/+bug/1578529)  
+
 
 #### others ####
 ```Bash
@@ -785,13 +827,13 @@ mkdir demoCA
 mkdir demoCA/newcerts
 touch demoCA/index.txt
 echo '01'>demoCA/serial
-openssl genrsa -out roota.key 2048
+openssl genrsa -out roota.key 4096
 openssl req -new -key roota.key -out roota.csr
 openssl ca -extensions v3_ca -in roota.csr -out roota.crt -cert CARoot.crt -keyfile CARoot.key -days 1826 -policy policy_anything
 cat roota.crt CARoot.crt | tee roota_fullchain.crt
 # 签发SSL证书
-openssl genrsa -out server.key 2048
-# openssl ecparam -name secp256k1 -genkey -out server.key 2048
+openssl genrsa -out server.key 4096
+# openssl ecparam -name secp256k1 -genkey -out server.key 4096
 openssl req -new -key server.key -out server.csr -sha256 -days 3650 -reqexts SAN -config <(cat /usr/lib/ssl/openssl.cnf <(printf '[SAN]\nsubjectAltName=DNS:www.baidu.com,IP:192.168.1.1'))
 openssl ca -in server.csr -cert roota.crt -keyfile roota.key -out server.crt -md sha256 -extensions SAN -config <(cat /usr/lib/ssl/openssl.cnf <(printf '[SAN]\nsubjectAltName=DNS:www.baidu.com,IP:192.168.1.1'))
 cat server.crt roota.crt CARoot.crt | tee server_fullchain.crt
