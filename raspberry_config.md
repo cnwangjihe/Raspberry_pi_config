@@ -722,6 +722,24 @@ flags=(attach_disconnected)
 [AppArmor 'Failed name lookup - disconnected path'](https://bugs.launchpad.net/apparmor/+bug/1578529)  
 
 
+### Part 22 mount raw disk ###
+
+```Bash
+# map raw disk image to loop device
+losetup /dev/loop0 raw-image-file.raw
+# use kpartx to identify and map disk partitions
+kpartx -a /dev/loop0
+# now, you can see partitions under /dev/mapper/loop0*
+ls /dev/mapper/loop0*
+# and mount normally
+mount /dev/mapper/loop0p1 /mnt
+# ummap everything
+umount /mnt
+kpartx -d /dev/loop0
+losetup -d /dev/loop0
+```  
+
+
 Create Services.
 ------
 
@@ -790,6 +808,10 @@ sed -i 's/origin/dst/g' *.xxx # replace string in file
 cat /dev/null > ~/.bash_history && history -c && exit # entirely clear bash history
 lsb_release -a # show os info
 cat /etc/os-release # show os info
+# xdelta3 gen patch
+xdelta3 -v -e -s origin_file patched_file patch
+# xdelta3 apply patch, use -f to overwrite patched_file
+xdelta3 -v -d -s origin_file patch patched_file
 ```
 
 ### Network "top" ###
